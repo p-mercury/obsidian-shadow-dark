@@ -2,9 +2,10 @@
 	"id": "shadow-dark",
 	"name": "ShadowDark",
 	"version": "1.0.0",
-	"minAppVersion": "1.0.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
+	"minAppVersion": "1.13.0",
+	"description": "An expansive toolkit for Shadowdark GMs",
 	"author": "Luis Vierroth",
 	"authorUrl": "https://github.com/p-mercury",
+	"fundingUrl": "https://ko-fi.com/luisvierroth",
 	"isDesktopOnly": true
 }
