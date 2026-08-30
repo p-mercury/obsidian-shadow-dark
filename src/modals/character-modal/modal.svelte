@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Character } from "../../types";
+	import type { Pc } from "../../types/pc";
 
-	let { character }: { character: Character } = $props();
+	let { character }: { character: Pc } = $props();
 </script>
 
 <ul>

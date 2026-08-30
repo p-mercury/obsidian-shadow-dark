@@ -2,14 +2,14 @@ import { App, Modal } from "obsidian";
 import { mount, unmount } from "svelte";
 
 import Moadl from "./modal.svelte";
-import type { Character } from "../../types";
+import type { Pc } from "../../types/pc";
 
 export class CharacterModal extends Modal {
 	private component: ReturnType<typeof mount> | undefined;
 
 	constructor(
 		app: App,
-		private character: Character,
+		private character: Pc,
 	) {
 		super(app);
 	}
