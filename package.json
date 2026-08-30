@@ -1,0 +1,35 @@
+{
+	"name": "obsidian-shadow-dark",
+	"version": "0.1.0",
+	"description": "Shadowdark plugin for obsidian",
+	"keywords": [],
+	"license": "Apache-2.0",
+	"type": "module",
+	"main": "main.js",
+	"scripts": {
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"dev": "node esbuild.config.mjs",
+		"lint": "eslint .",
+		"version": "node version-bump.mjs && git add manifest.json versions.json"
+	},
+	"prettier": {
+		"plugins": [
+			"prettier-plugin-packagejson"
+		],
+		"useTabs": true
+	},
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"@types/node": "^26.4.0",
+		"esbuild": "0.28.2",
+		"eslint": "^10.9.1",
+		"eslint-plugin-obsidianmd": "^0.4.2",
+		"globals": "^17.11.0",
+		"jiti": "^2.7.0",
+		"obsidian": "latest",
+		"prettier": "^3.9.6",
+		"prettier-plugin-packagejson": "^3.0.2",
+		"typescript": "^6.0.3",
+		"typescript-eslint": "^8.68.0"
+	}
+}
