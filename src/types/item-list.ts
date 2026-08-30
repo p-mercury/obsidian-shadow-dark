@@ -1,7 +1,12 @@
 import type { ArmorType } from "./armor-type";
 import type { WeaponType } from "./weapon-type";
 
-export type ItemList = { title: string; items: (ArmorType | WeaponType)[] };
+export type ItemList = {
+	title: string;
+	items: ((ArmorType | WeaponType) & {
+		quantity: number;
+	})[];
+};
 
 export function marshalItemList(itemList: ItemList) {
 	return [

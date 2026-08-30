@@ -11,7 +11,7 @@
 	<ul>
 		{#each itemList.items as item}
 			<li>
-				<span>{item.name}</span>
+				<span>{item.quantity}x {item.name}</span>
 			</li>
 		{/each}
 	</ul>

@@ -3,6 +3,7 @@
 	import { getAncestryName } from "../../types/ancestry";
 	import type { Npc } from "../../types/npc";
 	import { getOccupationName } from "../../types/occupation";
+	import { getStatModifier } from "../../types/stat";
 	import { getWealthName } from "../../types/wealth";
 
 	let { npc }: { npc: Npc } = $props();
@@ -16,6 +17,50 @@
 		{getAncestryName(npc.ancestry)}
 		{getOccupationName(npc.occupation)}
 	</span>
+	<ul class="stats papyros">
+		<li>
+			<h3>STR</h3>
+			<div>
+				<span>{getStatModifier(npc.stats.strength)}</span>
+				({npc.stats.strength})
+			</div>
+		</li>
+		<li>
+			<h3>DEX</h3>
+			<div>
+				<span>{getStatModifier(npc.stats.dexterity)}</span>
+				({npc.stats.dexterity})
+			</div>
+		</li>
+		<li>
+			<h3>CON</h3>
+			<div>
+				<span>{getStatModifier(npc.stats.constitution)}</span>
+				({npc.stats.constitution})
+			</div>
+		</li>
+		<li>
+			<h3>INT</h3>
+			<div>
+				<span>{getStatModifier(npc.stats.intelligence)}</span>
+				({npc.stats.intelligence})
+			</div>
+		</li>
+		<li>
+			<h3>WIS</h3>
+			<div>
+				<span>{getStatModifier(npc.stats.wisdom)}</span>
+				({npc.stats.wisdom})
+			</div>
+		</li>
+		<li>
+			<h3>CHA</h3>
+			<div>
+				<span>{getStatModifier(npc.stats.charisma)}</span>
+				({npc.stats.charisma})
+			</div>
+		</li>
+	</ul>
 	<div class="info papyros">
 		<span>Age: {getAgeName(npc.age)}</span>
 		<span>Wealth: {getWealthName(npc.wealth)}</span>
@@ -53,6 +98,38 @@
 		padding: 0;
 		margin: 0;
 		text-align: center;
+	}
+
+	.stats {
+		all: unset;
+		display: grid;
+		grid-auto-flow: column;
+		border-radius: 0.4rem;
+		padding: 0.4rem;
+
+		li {
+			all: unset;
+			display: flex;
+			flex-direction: column;
+
+			h3 {
+				grid-area: title;
+				text-align: center;
+				margin: 0;
+				padding: 0;
+				font-weight: 700;
+				font-size: 0.9rem;
+			}
+
+			div {
+				text-align: center;
+				font-size: 0.8rem;
+
+				span {
+					font-weight: 600;
+				}
+			}
+		}
 	}
 
 	.info {

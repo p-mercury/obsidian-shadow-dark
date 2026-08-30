@@ -84,7 +84,10 @@ export default class Shadowdark extends Plugin {
 
 							const items = Array.from(
 								{ length: Math.floor(Math.random() * 6) + 5 },
-								() => getRandomItem(),
+								() => ({
+									...getRandomItem(),
+									quantity: Math.floor(Math.random() * 20) + 1,
+								}),
 							);
 
 							const shopFile = await this.app.vault.create(

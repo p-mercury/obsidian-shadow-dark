@@ -11,6 +11,16 @@ export interface Npc {
 	age: Age;
 	alignment: Alignment;
 	wealth: Wealth;
+
+	hitPoints: number;
+	stats: {
+		strength: number;
+		dexterity: number;
+		constitution: number;
+		intelligence: number;
+		wisdom: number;
+		charisma: number;
+	};
 }
 
 export function marshalNpc(npc: Npc) {

@@ -9,7 +9,6 @@ export interface Pc {
 	alignment: Alignment;
 
 	hitPoints: number;
-
 	stats: {
 		strength: number;
 		dexterity: number;

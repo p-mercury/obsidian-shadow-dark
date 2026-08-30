@@ -10,11 +10,8 @@
 
 <article>
 	<h2 class="papyros">
-		{pc.name}
+		<span>{pc.name}</span><span>{getAncestryName(pc.ancestry)}</span>
 	</h2>
-	<span class="subtitle">
-		{getAncestryName(pc.ancestry)}
-	</span>
 	<ul class="stats papyros">
 		<li>
 			<h3>STR</h3>
@@ -86,16 +83,8 @@
 		padding: 0.4rem;
 		margin: 0;
 		text-align: center;
-	}
-
-	.subtitle {
-		border-radius: 0.4rem;
-		color: #dec173;
-		font-weight: 500;
-		font-size: 0.8rem;
-		padding: 0;
-		margin: 0;
-		text-align: center;
+		display: flex;
+		justify-content: space-between;
 	}
 
 	.stats {
