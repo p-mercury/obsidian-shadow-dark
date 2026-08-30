@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-shadow-dark",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"description": "Shadowdark plugin for obsidian",
 	"keywords": [],
 	"license": "Apache-2.0",
@@ -14,14 +14,24 @@
 	},
 	"prettier": {
 		"plugins": [
-			"prettier-plugin-packagejson"
+			"prettier-plugin-packagejson",
+			"prettier-plugin-svelte"
 		],
-		"useTabs": true
+		"useTabs": true,
+		"overrides": [
+			{
+				"files": "*.svelte",
+				"options": {
+					"parser": "svelte"
+				}
+			}
+		]
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
 		"@types/node": "^26.4.0",
 		"esbuild": "0.28.2",
+		"esbuild-svelte": "^0.9.5",
 		"eslint": "^10.9.1",
 		"eslint-plugin-obsidianmd": "^0.4.2",
 		"globals": "^17.11.0",
@@ -29,7 +39,14 @@
 		"obsidian": "latest",
 		"prettier": "^3.9.6",
 		"prettier-plugin-packagejson": "^3.0.2",
+		"prettier-plugin-svelte": "^4.1.1",
+		"svelte": "^5.57.0",
+		"svelte-check": "^4.7.6",
+		"svelte-preprocess": "^6.0.5",
 		"typescript": "^6.0.3",
 		"typescript-eslint": "^8.68.0"
+	},
+	"allowScripts": {
+		"esbuild@0.28.2": true
 	}
 }
