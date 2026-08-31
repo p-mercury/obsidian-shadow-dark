@@ -1,9 +1,9 @@
 {
 	"id": "shadow-dark",
 	"name": "ShadowDark",
-	"version": "1.0.1",
+	"version": "1.0.3",
 	"minAppVersion": "1.13.0",
-	"description": "An expansive toolkit for Shadowdark GMs",
+	"description": "An expansive toolkit for Shadowdark GMs.",
 	"author": "Luis Vierroth",
 	"authorUrl": "https://github.com/p-mercury",
 	"fundingUrl": "https://ko-fi.com/luisvierroth",
