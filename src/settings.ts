@@ -1,4 +1,4 @@
-import { App, PluginSettingTab, Setting } from "obsidian";
+import { App, PluginSettingTab } from "obsidian";
 import Shadowdark from "./main";
 
 export interface ShadowdarkSettings {
@@ -10,29 +10,21 @@ export const DEFAULT_SETTINGS: ShadowdarkSettings = {
 };
 
 export class SettingTab extends PluginSettingTab {
-	plugin: Shadowdark;
-
 	constructor(app: App, plugin: Shadowdark) {
 		super(app, plugin);
-		this.plugin = plugin;
 	}
 
-	display(): void {
-		const { containerEl } = this;
-
-		containerEl.empty();
-
-		new Setting(containerEl)
-			.setName("Settings #1")
-			.setDesc("It's a secret")
-			.addText((text) =>
-				text
-					.setPlaceholder("Enter your secret")
-					.setValue(this.plugin.settings.mySetting)
-					.onChange(async (value) => {
-						this.plugin.settings.mySetting = value;
-						await this.plugin.saveSettings();
-					}),
-			);
+	getSettingDefinitions() {
+		return [
+			{
+				name: "Settings #1",
+				desc: "It's a secret",
+				control: {
+					type: "text" as const,
+					key: "mySetting",
+					placeholder: "Enter your secret",
+				},
+			},
+		];
 	}
 }

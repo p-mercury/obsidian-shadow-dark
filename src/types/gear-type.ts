@@ -1,20 +1,27 @@
+import { Abundance } from "./abundance";
 import type { Coin } from "./coin";
 
 export interface GearType {
 	name: string;
 	slotUsage: SlotUsage;
 	cost: Coin;
+
+	abundance: Abundance;
+	stackSize: number;
 }
 
-export const ARMOR_TYPES: GearType[] = [
+export const GEAR_TYPES: GearType[] = [
 	{
-		name: "Arrow",
+		name: "Arrows",
 		slotUsage: { itemsPerSlot: 20 },
 		cost: {
-			gold: 0,
+			gold: 1,
 			silver: 0,
-			copper: 50,
+			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 20,
 	},
 	{
 		name: "Backpack",
@@ -24,6 +31,9 @@ export const ARMOR_TYPES: GearType[] = [
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 1,
 	},
 	{
 		name: "Caltrops (one bag)",
@@ -33,15 +43,21 @@ export const ARMOR_TYPES: GearType[] = [
 			silver: 4,
 			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 1,
 	},
 	{
-		name: "Crossbow bolt",
+		name: "Crossbow bolts",
 		slotUsage: { itemsPerSlot: 20 },
 		cost: {
-			gold: 0,
+			gold: 1,
 			silver: 0,
-			copper: 50,
+			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 20,
 	},
 	{
 		name: "Crowbar",
@@ -51,6 +67,9 @@ export const ARMOR_TYPES: GearType[] = [
 			silver: 5,
 			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 1,
 	},
 	{
 		name: "Flask",
@@ -60,6 +79,9 @@ export const ARMOR_TYPES: GearType[] = [
 			silver: 3,
 			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 1,
 	},
 	{
 		name: "Bottle",
@@ -69,6 +91,9 @@ export const ARMOR_TYPES: GearType[] = [
 			silver: 3,
 			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 1,
 	},
 	{
 		name: "Flint and steel",
@@ -78,6 +103,9 @@ export const ARMOR_TYPES: GearType[] = [
 			silver: 5,
 			copper: 0,
 		},
+
+		abundance: Abundance.ABUNDANT,
+		stackSize: 1,
 	},
 	{
 		name: "Grappling hook",
@@ -87,15 +115,21 @@ export const ARMOR_TYPES: GearType[] = [
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.SCARCE,
+		stackSize: 1,
 	},
 	{
-		name: "Iron spike",
+		name: "Iron spikes",
 		slotUsage: { itemsPerSlot: 10 },
 		cost: {
-			gold: 0,
+			gold: 1,
 			silver: 0,
-			copper: 50,
+			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 10,
 	},
 	{
 		name: "Lantern",
@@ -105,6 +139,9 @@ export const ARMOR_TYPES: GearType[] = [
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.SCARCE,
+		stackSize: 1,
 	},
 	{
 		name: "Mirror",
@@ -114,6 +151,9 @@ export const ARMOR_TYPES: GearType[] = [
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.SCARCE,
+		stackSize: 1,
 	},
 	{
 		name: "Oil flask",
@@ -123,6 +163,9 @@ export const ARMOR_TYPES: GearType[] = [
 			silver: 5,
 			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 1,
 	},
 	{
 		name: "Pole",
@@ -132,15 +175,21 @@ export const ARMOR_TYPES: GearType[] = [
 			silver: 5,
 			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 1,
 	},
 	{
-		name: "Ration",
+		name: "Rations",
 		slotUsage: { itemsPerSlot: 3 },
 		cost: {
 			gold: 0,
-			silver: 2,
+			silver: 5,
 			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 3,
 	},
 	{
 		name: "Rope, 60'",
@@ -150,6 +199,9 @@ export const ARMOR_TYPES: GearType[] = [
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 1,
 	},
 	{
 		name: "Torch",
@@ -159,5 +211,8 @@ export const ARMOR_TYPES: GearType[] = [
 			silver: 5,
 			copper: 0,
 		},
+
+		abundance: Abundance.ABUNDANT,
+		stackSize: 1,
 	},
 ];

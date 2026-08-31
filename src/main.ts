@@ -10,6 +10,8 @@ import { Npc } from "./types/npc.svelte";
 import { getRandomItem } from "./generators/random-item";
 import { marshalItemList } from "./types/item-list";
 import { renderItemListBlock } from "./blocks/item-list";
+import { Age } from "./types/age";
+import { Abundance } from "./types/abundance";
 
 export default class Shadowdark extends Plugin {
 	settings!: ShadowdarkSettings;
@@ -83,27 +85,50 @@ export default class Shadowdark extends Plugin {
 						.setTitle("Random Shop")
 						.setIcon("dices")
 						.onClick(async () => {
-							const npc = Npc.random();
+							const npc = Npc.random({
+								ages: [
+									Age.YOUNG_ADULT,
+									Age.ADULT,
+									Age.MIDDLE_AGED,
+									Age.ELDERLY,
+								],
+							});
 							const shopName = `${npc.name}'s Little Shop`;
 
 							const safeName = shopName.replace(/[\\/:*?"<>|]/g, "-");
 							const path = `${file.path}/${safeName}.md`;
 
-							const items = Array.from(
-								{ length: Math.floor(Math.random() * 6) + 5 },
-								() => ({
-									...getRandomItem(),
-									quantity: Math.floor(Math.random() * 20) + 1,
-								}),
-							);
+							const itemCount = Math.floor(Math.random() * 4) + 8;
+							const uniqueItems = new Map();
+							while (uniqueItems.size < itemCount) {
+								const STACK_RANGES = {
+									[Abundance.SCARCE]: { min: 1, max: 1 },
+									[Abundance.COMMON]: { min: 1, max: 2 },
+									[Abundance.ABUNDANT]: { min: 2, max: 3 },
+								};
+
+								const item = getRandomItem();
+								if (uniqueItems.has(item.name)) continue;
+								const { min, max } = STACK_RANGES[item.abundance];
+
+								uniqueItems.set(item.name, {
+									...item,
+									quantity:
+										(Math.floor(Math.random() * (max - min + 1)) + min) *
+										item.stackSize,
+								});
+							}
+							const items = [...uniqueItems.values()];
 
 							const shopFile = await this.app.vault.create(
 								path,
 								npc.marshal() +
 									"\n\n" +
-									marshalItemList({ title: "Shop Inventory", items }),
+									marshalItemList({ title: "Inventory", items }),
 							);
-							await this.app.workspace.getLeaf(false).openFile(shopFile);
+							await this.app.workspace
+								.getLeaf(false)
+								.openFile(shopFile, { state: { mode: "preview" } });
 						});
 				});
 			}),

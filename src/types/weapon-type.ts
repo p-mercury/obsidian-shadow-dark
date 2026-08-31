@@ -1,3 +1,4 @@
+import { Abundance } from "./abundance";
 import type { Coin } from "./coin";
 import type { DiceRoll } from "./dice-roll";
 import { Range } from "./range";
@@ -5,8 +6,12 @@ import { Range } from "./range";
 export interface WeaponType {
 	name: string;
 	slotUsage: SlotUsage;
-	finesse: boolean;
 	cost: Coin;
+
+	abundance: Abundance;
+	stackSize: number;
+
+	finesse: boolean;
 	rangeAttack?: {
 		range: Range;
 		singleHandedDamage?: DiceRoll;
@@ -23,12 +28,16 @@ export const WEAPON_TYPES: WeaponType[] = [
 	{
 		name: "Bastard sword",
 		slotUsage: { slotsPerItem: 2 },
-		finesse: false,
 		cost: {
 			gold: 10,
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.SCARCE,
+		stackSize: 1,
+
+		finesse: false,
 		meleeAttack: {
 			range: Range.CLOSE,
 			singleHandedDamage: {
@@ -46,12 +55,16 @@ export const WEAPON_TYPES: WeaponType[] = [
 	{
 		name: "Club",
 		slotUsage: { slotsPerItem: 1 },
-		finesse: false,
 		cost: {
 			gold: 0,
 			silver: 0,
 			copper: 5,
 		},
+
+		abundance: Abundance.ABUNDANT,
+		stackSize: 1,
+
+		finesse: false,
 		meleeAttack: {
 			range: Range.CLOSE,
 			singleHandedDamage: {
@@ -64,12 +77,16 @@ export const WEAPON_TYPES: WeaponType[] = [
 	{
 		name: "Crossbow",
 		slotUsage: { slotsPerItem: 1 },
-		finesse: false,
 		cost: {
 			gold: 8,
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 1,
+
+		finesse: false,
 		rangeAttack: {
 			range: Range.FAR,
 			singleHandedDamage: {
@@ -82,12 +99,16 @@ export const WEAPON_TYPES: WeaponType[] = [
 	{
 		name: "Dagger",
 		slotUsage: { slotsPerItem: 1 },
-		finesse: true,
 		cost: {
 			gold: 1,
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.ABUNDANT,
+		stackSize: 1,
+
+		finesse: true,
 		rangeAttack: {
 			range: Range.NEAR,
 			singleHandedDamage: {
@@ -108,12 +129,16 @@ export const WEAPON_TYPES: WeaponType[] = [
 	{
 		name: "Greataxe",
 		slotUsage: { slotsPerItem: 2 },
-		finesse: false,
 		cost: {
 			gold: 10,
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.SCARCE,
+		stackSize: 1,
+
+		finesse: false,
 		meleeAttack: {
 			range: Range.CLOSE,
 			singleHandedDamage: {
@@ -131,12 +156,16 @@ export const WEAPON_TYPES: WeaponType[] = [
 	{
 		name: "Greatsword",
 		slotUsage: { slotsPerItem: 2 },
-		finesse: false,
 		cost: {
 			gold: 12,
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.SCARCE,
+		stackSize: 1,
+
+		finesse: false,
 		meleeAttack: {
 			range: Range.CLOSE,
 			doubleHandedDamage: {
@@ -149,12 +178,16 @@ export const WEAPON_TYPES: WeaponType[] = [
 	{
 		name: "Javelin",
 		slotUsage: { slotsPerItem: 1 },
-		finesse: false,
 		cost: {
 			gold: 0,
 			silver: 5,
 			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 1,
+
+		finesse: false,
 		rangeAttack: {
 			range: Range.FAR,
 			singleHandedDamage: {
@@ -175,12 +208,16 @@ export const WEAPON_TYPES: WeaponType[] = [
 	{
 		name: "Longbow",
 		slotUsage: { slotsPerItem: 1 },
-		finesse: false,
 		cost: {
 			gold: 8,
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 1,
+
+		finesse: false,
 		rangeAttack: {
 			range: Range.FAR,
 			doubleHandedDamage: {
@@ -193,12 +230,16 @@ export const WEAPON_TYPES: WeaponType[] = [
 	{
 		name: "Longsword",
 		slotUsage: { slotsPerItem: 1 },
-		finesse: false,
 		cost: {
 			gold: 9,
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 1,
+
+		finesse: false,
 		meleeAttack: {
 			range: Range.CLOSE,
 			singleHandedDamage: {
@@ -211,12 +252,16 @@ export const WEAPON_TYPES: WeaponType[] = [
 	{
 		name: "Mace",
 		slotUsage: { slotsPerItem: 1 },
-		finesse: false,
 		cost: {
 			gold: 0,
 			silver: 5,
 			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 1,
+
+		finesse: false,
 		meleeAttack: {
 			range: Range.CLOSE,
 			singleHandedDamage: {
@@ -229,12 +274,16 @@ export const WEAPON_TYPES: WeaponType[] = [
 	{
 		name: "Shortbow",
 		slotUsage: { slotsPerItem: 1 },
-		finesse: false,
 		cost: {
 			gold: 6,
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 1,
+
+		finesse: false,
 		rangeAttack: {
 			range: Range.FAR,
 			doubleHandedDamage: {
@@ -247,12 +296,16 @@ export const WEAPON_TYPES: WeaponType[] = [
 	{
 		name: "Shortsword",
 		slotUsage: { slotsPerItem: 1 },
-		finesse: false,
 		cost: {
 			gold: 7,
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 1,
+
+		finesse: false,
 		meleeAttack: {
 			range: Range.CLOSE,
 			singleHandedDamage: {
@@ -265,12 +318,16 @@ export const WEAPON_TYPES: WeaponType[] = [
 	{
 		name: "Spear",
 		slotUsage: { slotsPerItem: 1 },
-		finesse: false,
 		cost: {
 			gold: 0,
 			silver: 5,
 			copper: 0,
 		},
+
+		abundance: Abundance.ABUNDANT,
+		stackSize: 1,
+
+		finesse: false,
 		rangeAttack: {
 			range: Range.NEAR,
 			singleHandedDamage: {
@@ -291,12 +348,16 @@ export const WEAPON_TYPES: WeaponType[] = [
 	{
 		name: "Staff",
 		slotUsage: { slotsPerItem: 1 },
-		finesse: false,
 		cost: {
 			gold: 0,
 			silver: 5,
 			copper: 0,
 		},
+
+		abundance: Abundance.ABUNDANT,
+		stackSize: 1,
+
+		finesse: false,
 		meleeAttack: {
 			range: Range.CLOSE,
 			doubleHandedDamage: {
@@ -309,12 +370,16 @@ export const WEAPON_TYPES: WeaponType[] = [
 	{
 		name: "Warhammer",
 		slotUsage: { slotsPerItem: 1 },
-		finesse: false,
 		cost: {
 			gold: 10,
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.SCARCE,
+		stackSize: 1,
+
+		finesse: false,
 		meleeAttack: {
 			range: Range.CLOSE,
 			doubleHandedDamage: {

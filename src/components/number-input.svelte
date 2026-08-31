@@ -73,11 +73,11 @@
 					stroke-width="1.5"
 					stroke-linecap="round"
 					stroke-linejoin="round"
-				></path>
+				/>
 			</svg>
 		</button>
 		<div class="qty-input">
-			{value}/{max}
+			{value}{#if max}/{max}{/if}
 		</div>
 		<button
 			class="micro-btn"
@@ -92,14 +92,14 @@
 					stroke-width="1.5"
 					stroke-linecap="round"
 					stroke-linejoin="round"
-				></path>
+				/>
 				<path
 					d="M12 6V18"
 					stroke="#000000"
 					stroke-width="1.5"
 					stroke-linecap="round"
 					stroke-linejoin="round"
-				></path>
+				/>
 			</svg>
 		</button>
 	</div>
@@ -114,18 +114,18 @@
 	.qty {
 		display: flex;
 		align-items: center;
-		gap: 0.4rem;
+		gap: 0.2rem;
 		border-radius: 0.6rem;
 	}
 
 	.micro-btn {
 		border: none;
-		width: 1.8rem;
-		height: 1.8rem;
+		width: 1.4rem;
+		height: 1.4rem;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: darkgray;
+		background: var(--interactive-accent);
 		border-radius: 0.6rem;
 		cursor: pointer;
 	}
@@ -135,12 +135,11 @@
 		flex: 0 0 1rem;
 		width: 1rem;
 		height: 1rem;
-		min-width: 1rem;
-		max-width: 1rem;
 	}
 
 	.micro-btn > svg path {
-		stroke: black;
+		stroke: var(--text-on-accent);
+		stroke-width: 0.2rem;
 	}
 
 	.micro-btn.disabled {
@@ -149,14 +148,14 @@
 	}
 
 	.qty-input {
-		width: 1.5rem;
+		width: 2.6rem;
 		text-align: center;
 		border: none;
 		background: transparent;
 		font-size: 0.8rem;
 		outline: none;
 		padding: 0;
-		color: black;
+		color: inherit;
 		cursor: default;
 	}
 </style>

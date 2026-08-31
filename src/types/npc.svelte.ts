@@ -31,6 +31,14 @@ export interface NpcData {
 	};
 }
 
+export interface RandomNpcProps {
+	ancestries?: Ancestry[];
+	occupations?: Occupation[];
+	ages?: Age[];
+	alignments?: Alignment[];
+	wealths?: Wealth[];
+}
+
 export class Npc {
 	name: string;
 	ancestry: Ancestry;
@@ -54,8 +62,8 @@ export class Npc {
 		this.stats = $state({ ...data.stats });
 	}
 
-	static random(): Npc {
-		const ancestry = getRandomAncestry();
+	static random(props?: RandomNpcProps): Npc {
+		const ancestry = getRandomAncestry(props?.ancestries);
 
 		let stats: NpcData["stats"];
 
@@ -75,10 +83,10 @@ export class Npc {
 		return new Npc({
 			name: getRandomNpcName(ancestry),
 			ancestry,
-			occupation: getRandomOccupation(),
-			age: getRandomAge(),
-			alignment: getRandomAlignment(),
-			wealth: getRandomWealth(),
+			occupation: getRandomOccupation(props?.occupations),
+			age: getRandomAge(props?.ages),
+			alignment: getRandomAlignment(props?.alignments),
+			wealth: getRandomWealth(props?.wealths),
 			stats,
 			maxHitPoints,
 			hitPoints: maxHitPoints,

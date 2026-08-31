@@ -1,9 +1,13 @@
+import { Abundance } from "./abundance";
 import type { Coin } from "./coin";
 
 export interface ArmorType {
 	name: string;
 	slotUsage: SlotUsage;
 	cost: Coin;
+
+	abundance: Abundance;
+	stackSize: number;
 }
 
 export const ARMOR_TYPES: ArmorType[] = [
@@ -15,6 +19,9 @@ export const ARMOR_TYPES: ArmorType[] = [
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.ABUNDANT,
+		stackSize: 1,
 	},
 	{
 		name: "Chainmail",
@@ -24,6 +31,9 @@ export const ARMOR_TYPES: ArmorType[] = [
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 1,
 	},
 	{
 		name: "Mithral Chainmail",
@@ -33,6 +43,9 @@ export const ARMOR_TYPES: ArmorType[] = [
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.SCARCE,
+		stackSize: 1,
 	},
 	{
 		name: "Platemail",
@@ -42,6 +55,9 @@ export const ARMOR_TYPES: ArmorType[] = [
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.SCARCE,
+		stackSize: 1,
 	},
 	{
 		name: "Mithral Platemail",
@@ -51,6 +67,9 @@ export const ARMOR_TYPES: ArmorType[] = [
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.SCARCE,
+		stackSize: 1,
 	},
 	{
 		name: "Shield",
@@ -60,5 +79,8 @@ export const ARMOR_TYPES: ArmorType[] = [
 			silver: 0,
 			copper: 0,
 		},
+
+		abundance: Abundance.COMMON,
+		stackSize: 1,
 	},
 ];
