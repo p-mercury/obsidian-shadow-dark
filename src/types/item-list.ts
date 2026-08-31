@@ -18,11 +18,11 @@ export function marshalItemList(itemList: ItemList) {
 	].join("\n");
 }
 
-export function unmarshalItemList(content: string): ItemList {
+export function unmarshalItemList(content: string) {
 	const blockMatch = content.match(/```shadowdark-item-list\s*([\s\S]*?)```/);
 	const json = blockMatch?.[1]?.trim() ?? content.trim();
 	try {
-		return JSON.parse(json);
+		return JSON.parse(json) as ItemList;
 	} catch {
 		throw new Error("Invalid PC JSON.");
 	}

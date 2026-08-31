@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Pc } from "../../types/pc";
+	import { marshalPc, type Pc } from "../../types/pc";
 
 	let {
 		pc,
@@ -11,19 +11,17 @@
 
 	let draft = $state(pc);
 
-	let saveTimeout: ReturnType<typeof setTimeout>;
-
+	let saveTimeout: number | undefined;
 	$effect(() => {
-		const currentDraft = JSON.stringify(draft);
-		const original = JSON.stringify(pc);
-
+		const currentDraft = marshalPc(draft);
+		const original = marshalPc(pc);
 		if (currentDraft !== original) {
-			clearTimeout(saveTimeout);
-
-			saveTimeout = setTimeout(() => {
+			window.clearTimeout(saveTimeout);
+			saveTimeout = window.setTimeout(() => {
 				onSave?.($state.snapshot(draft));
 			}, 500);
 		}
+		return () => window.clearTimeout(saveTimeout);
 	});
 </script>
 

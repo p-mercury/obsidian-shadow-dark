@@ -31,7 +31,7 @@ class PcBlockChild extends MarkdownRenderChild {
 			return;
 		}
 
-		setTimeout(() => {
+		window.setTimeout(() => {
 			const isLivePreview =
 				this.containerEl.closest(".markdown-source-view") !== null;
 

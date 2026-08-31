@@ -25,14 +25,13 @@ class NpcBlockChild extends MarkdownRenderChild {
 		let character: Npc;
 
 		try {
-			console.log(this.source);
 			character = unmarshalNpc(this.source);
 		} catch {
 			this.containerEl.setText("Invalid character data.");
 			return;
 		}
 
-		setTimeout(() => {
+		window.setTimeout(() => {
 			const isLivePreview =
 				this.containerEl.closest(".markdown-source-view") !== null;
 

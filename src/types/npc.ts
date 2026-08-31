@@ -34,11 +34,11 @@ export function marshalNpc(npc: Npc) {
 	].join("\n");
 }
 
-export function unmarshalNpc(content: string): Npc {
+export function unmarshalNpc(content: string) {
 	const blockMatch = content.match(/```shadowdark-npc\s*([\s\S]*?)```/);
 	const json = blockMatch?.[1]?.trim() ?? content.trim();
 	try {
-		return JSON.parse(json);
+		return JSON.parse(json) as Npc;
 	} catch {
 		throw new Error("Invalid PC JSON.");
 	}

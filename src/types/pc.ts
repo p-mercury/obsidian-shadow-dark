@@ -30,11 +30,11 @@ export function marshalPc(pc: Pc) {
 	].join("\n");
 }
 
-export function unmarshalPc(content: string): Pc {
+export function unmarshalPc(content: string) {
 	const blockMatch = content.match(/```shadowdark-pc\s*([\s\S]*?)```/);
 	const json = blockMatch?.[1]?.trim() ?? content.trim();
 	try {
-		return JSON.parse(json);
+		return JSON.parse(json) as Pc;
 	} catch {
 		throw new Error("Invalid PC JSON.");
 	}
