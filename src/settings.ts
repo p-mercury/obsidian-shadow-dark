@@ -9,7 +9,7 @@ export const DEFAULT_SETTINGS: ShadowdarkSettings = {
 	mySetting: "default",
 };
 
-export class SampleSettingTab extends PluginSettingTab {
+export class SettingTab extends PluginSettingTab {
 	plugin: Shadowdark;
 
 	constructor(app: App, plugin: Shadowdark) {
