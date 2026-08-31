@@ -10,11 +10,10 @@ export type ItemList = {
 
 export function marshalItemList(itemList: ItemList) {
 	return [
-		"",
 		"```shadowdark-item-list",
 		JSON.stringify(itemList, null, 2),
 		"```",
-		"",
+		`^item-list-${itemList.title}`,
 	].join("\n");
 }
 

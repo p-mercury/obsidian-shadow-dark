@@ -1,14 +1,12 @@
 import { Plugin, TFolder } from "obsidian";
 
 import { DEFAULT_SETTINGS, type ShadowdarkSettings } from "./settings";
-import { CharacterModal } from "./modals/character-modal";
-import { getRandomNpc } from "./generators/random-npc";
 import { getRandomPc } from "./generators/random-pc";
 
 import { renderPcBlock } from "./blocks/pc-block";
 import { renderNpcBlock } from "./blocks/npc-block";
 import { marshalPc } from "./types/pc";
-import { marshalNpc } from "./types/npc";
+import { Npc } from "./types/npc.svelte";
 import { getRandomItem } from "./generators/random-item";
 import { marshalItemList } from "./types/item-list";
 import { renderItemListBlock } from "./blocks/item-list";
@@ -46,15 +44,6 @@ export default class Shadowdark extends Plugin {
 
 				menu.addItem((item) => {
 					item
-						.setTitle("New PC")
-						.setIcon("user-plus")
-						.onClick(() => {
-							new CharacterModal(this.app, getRandomPc()).open();
-						});
-				});
-
-				menu.addItem((item) => {
-					item
 						.setTitle("Random PC")
 						.setIcon("dices")
 						.onClick(() => {
@@ -66,8 +55,26 @@ export default class Shadowdark extends Plugin {
 					item
 						.setTitle("Random NPC")
 						.setIcon("dices")
-						.onClick(() => {
-							void this.createCharacterFile(file, getRandomNpc(), marshalNpc);
+						.onClick(async () => {
+							const character = Npc.random();
+
+							const name =
+								typeof character === "object" &&
+								character !== null &&
+								"name" in character &&
+								typeof character.name === "string"
+									? character.name
+									: "Character";
+
+							const safeName = name.replace(/[\\/:*?"<>|]/g, "-");
+							const path = `${file.path}/${safeName}.md`;
+
+							const characterFile = await this.app.vault.create(
+								path,
+								character.marshal(),
+							);
+
+							await this.app.workspace.getLeaf(false).openFile(characterFile);
 						});
 				});
 
@@ -76,7 +83,7 @@ export default class Shadowdark extends Plugin {
 						.setTitle("Random Shop")
 						.setIcon("dices")
 						.onClick(async () => {
-							const npc = getRandomNpc();
+							const npc = Npc.random();
 							const shopName = `${npc.name}'s Little Shop`;
 
 							const safeName = shopName.replace(/[\\/:*?"<>|]/g, "-");
@@ -92,9 +99,9 @@ export default class Shadowdark extends Plugin {
 
 							const shopFile = await this.app.vault.create(
 								path,
-								marshalNpc(npc) +
+								npc.marshal() +
 									"\n\n" +
-									marshalItemList({ title: "Inventory", items }),
+									marshalItemList({ title: "Shop Inventory", items }),
 							);
 							await this.app.workspace.getLeaf(false).openFile(shopFile);
 						});

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { marshalNpc, type Npc } from "../../types/npc";
+	import { type Npc } from "../../types/npc.svelte";
 
 	let {
 		npc,
@@ -13,12 +13,12 @@
 
 	let saveTimeout: number | undefined;
 	$effect(() => {
-		const currentDraft = marshalNpc(draft);
-		const original = marshalNpc(npc);
+		const currentDraft = draft.marshal;
+		const original = npc.marshal;
 		if (currentDraft !== original) {
 			window.clearTimeout(saveTimeout);
 			saveTimeout = window.setTimeout(() => {
-				onSave?.($state.snapshot(draft));
+				onSave?.(draft);
 			}, 500);
 		}
 		return () => window.clearTimeout(saveTimeout);

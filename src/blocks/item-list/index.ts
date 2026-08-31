@@ -6,7 +6,6 @@ import {
 } from "obsidian";
 import { mount, unmount } from "svelte";
 import ReadBlock from "./read-block.svelte";
-import WriteBlock from "./write-block.svelte";
 import {
 	marshalItemList,
 	unmarshalItemList,
@@ -43,18 +42,16 @@ class ItemListBlockChild extends MarkdownRenderChild {
 
 			const isEditable = isLivePreview && !isEmbed;
 
-			const TargetComponent = isEditable ? WriteBlock : ReadBlock;
+			if (isEditable) {
+				return;
+			}
 
-			this.component = mount(TargetComponent, {
+			this.component = mount(ReadBlock, {
 				target: this.containerEl,
 				props: {
 					itemList,
 					editable: isEditable,
 					onSave: async (updated: ItemList) => {
-						if (!isEditable) {
-							return;
-						}
-
 						const section = this.ctx.getSectionInfo(this.containerEl);
 
 						if (!section) {
@@ -70,14 +67,13 @@ class ItemListBlockChild extends MarkdownRenderChild {
 						}
 
 						await this.app.vault.process(file, (content) => {
-							const lines = content.split("\n");
-
+							const lines = content.split(/\r?\n/);
+							const replacement = marshalItemList(updated).split("\n");
 							lines.splice(
 								section.lineStart,
-								section.lineEnd - section.lineStart + 1,
-								marshalItemList(updated),
+								section.lineEnd - section.lineStart + 2,
+								...replacement,
 							);
-
 							return lines.join("\n");
 						});
 					},

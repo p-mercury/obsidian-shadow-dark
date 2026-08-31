@@ -6,8 +6,7 @@ import {
 } from "obsidian";
 import { mount, unmount } from "svelte";
 import ReadBlock from "./read-block.svelte";
-import WriteBlock from "./write-block.svelte";
-import { marshalNpc, unmarshalNpc, type Npc } from "../../types/npc";
+import { unmarshalNpc, type Npc } from "../../types/npc.svelte";
 
 class NpcBlockChild extends MarkdownRenderChild {
 	private component: ReturnType<typeof mount> | undefined;
@@ -40,18 +39,15 @@ class NpcBlockChild extends MarkdownRenderChild {
 
 			const isEditable = isLivePreview && !isEmbed;
 
-			const TargetComponent = isEditable ? WriteBlock : ReadBlock;
+			if (isEditable) {
+				return;
+			}
 
-			this.component = mount(TargetComponent, {
+			this.component = mount(ReadBlock, {
 				target: this.containerEl,
 				props: {
 					npc: character,
-					editable: isEditable,
 					onSave: async (updated: Npc) => {
-						if (!isEditable) {
-							return;
-						}
-
 						const section = this.ctx.getSectionInfo(this.containerEl);
 
 						if (!section) {
@@ -67,14 +63,13 @@ class NpcBlockChild extends MarkdownRenderChild {
 						}
 
 						await this.app.vault.process(file, (content) => {
-							const lines = content.split("\n");
-
+							const lines = content.split(/\r?\n/);
+							const replacement = updated.marshal().split("\n");
 							lines.splice(
 								section.lineStart,
-								section.lineEnd - section.lineStart + 1,
-								marshalNpc(updated),
+								section.lineEnd - section.lineStart + 2,
+								...replacement,
 							);
-
 							return lines.join("\n");
 						});
 					},

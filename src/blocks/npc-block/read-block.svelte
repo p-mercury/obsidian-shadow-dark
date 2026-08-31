@@ -1,116 +1,153 @@
 <script lang="ts">
-	import { getAgeName } from "../../types/age";
+	import { untrack } from "svelte";
+	import { Npc } from "../../types/npc.svelte";
 	import { getAncestryName } from "../../types/ancestry";
-	import type { Npc } from "../../types/npc";
 	import { getOccupationName } from "../../types/occupation";
-	import { getStatModifier } from "../../types/stat";
+	import { getAgeName } from "../../types/age";
 	import { getWealthName } from "../../types/wealth";
+	import NumberInput from "../../components/number-input.svelte";
+	import { getStatModifierString } from "../../types/stat";
 
-	let { npc }: { npc: Npc } = $props();
+	let {
+		npc,
+		onSave,
+	}: {
+		npc: Npc;
+		onSave?: (npc: Npc) => void;
+	} = $props();
+
+	let _npc = new Npc(npc);
+	$effect(() => {
+		_npc.hitPoints;
+		untrack(() => {
+			if (_npc.marshal() !== npc.marshal()) {
+				onSave?.(_npc);
+			}
+		});
+	});
 </script>
 
 <article>
-	<h2 class="papyros">
-		{npc.name}
+	<h2>
+		{_npc.name}
 	</h2>
-	<span class="subtitle">
-		{getAncestryName(npc.ancestry)}
-		{getOccupationName(npc.occupation)}
-	</span>
-	<ul class="stats papyros">
+	<div class="details">
+		<span><b>Ancestry:</b> {getAncestryName(_npc.ancestry)}</span>
+		<span><b>Occupation:</b> {getOccupationName(_npc.occupation)}</span>
+		<span><b>Age:</b> {getAgeName(_npc.age)}</span>
+		<span><b>Wealth:</b> {getWealthName(_npc.wealth)}</span>
+	</div>
+	<ul class="stats">
+		<li>
+			<h3>HP</h3>
+			<NumberInput
+				min={0}
+				max={_npc.maxHitPoints}
+				bind:value={_npc.hitPoints}
+			/>
+		</li>
+		<li>
+			<h3>AC</h3>
+			<div><span>{_npc.armorClass}</span></div>
+		</li>
 		<li>
 			<h3>STR</h3>
 			<div>
-				<span>{getStatModifier(npc.stats.strength)}</span>
-				({npc.stats.strength})
+				<span>{getStatModifierString(_npc.stats.strength)}</span>
+				({_npc.stats.strength})
 			</div>
 		</li>
 		<li>
 			<h3>DEX</h3>
 			<div>
-				<span>{getStatModifier(npc.stats.dexterity)}</span>
-				({npc.stats.dexterity})
+				<span>{getStatModifierString(_npc.stats.dexterity)}</span>
+				({_npc.stats.dexterity})
 			</div>
 		</li>
 		<li>
 			<h3>CON</h3>
 			<div>
-				<span>{getStatModifier(npc.stats.constitution)}</span>
-				({npc.stats.constitution})
+				<span>{getStatModifierString(_npc.stats.constitution)}</span>
+				({_npc.stats.constitution})
 			</div>
 		</li>
 		<li>
 			<h3>INT</h3>
 			<div>
-				<span>{getStatModifier(npc.stats.intelligence)}</span>
-				({npc.stats.intelligence})
+				<span>{getStatModifierString(_npc.stats.intelligence)}</span>
+				({_npc.stats.intelligence})
 			</div>
 		</li>
 		<li>
 			<h3>WIS</h3>
 			<div>
-				<span>{getStatModifier(npc.stats.wisdom)}</span>
-				({npc.stats.wisdom})
+				<span>{getStatModifierString(_npc.stats.wisdom)}</span>
+				({_npc.stats.wisdom})
 			</div>
 		</li>
 		<li>
 			<h3>CHA</h3>
 			<div>
-				<span>{getStatModifier(npc.stats.charisma)}</span>
-				({npc.stats.charisma})
+				<span>{getStatModifierString(_npc.stats.charisma)}</span>
+				({_npc.stats.charisma})
 			</div>
 		</li>
 	</ul>
-	<div class="info papyros">
-		<span>Age: {getAgeName(npc.age)}</span>
-		<span>Wealth: {getWealthName(npc.wealth)}</span>
-	</div>
 </article>
 
 <style>
 	article {
 		font-family: PlaypenSans;
-		background-color: #261a14;
-		color: #261a14;
+		background-color: var(--background-primary-alt);
+		color: var(--text-normal);
+		border: var(--border-width) solid var(--background-modifier-border);
 		border-radius: 1rem;
 		padding: 0.6rem;
+		margin: 1rem 0;
 		display: grid;
-		grid-auto-flow: row;
-		gap: 0.6rem;
+		gap: 0.4rem;
 		width: 100%;
-		max-width: 30rem;
+		max-width: 32rem;
+		grid:
+			"name stats" auto
+			"details stats" 1fr
+			/ 1fr auto;
 	}
 
 	h2 {
+		grid-area: name;
 		border-radius: 0.4rem;
 		font-weight: 600;
 		font-size: 1.2rem;
 		padding: 0.4rem;
 		margin: 0;
-		text-align: center;
 	}
 
-	.subtitle {
-		border-radius: 0.4rem;
-		color: #dec173;
-		font-weight: 500;
-		font-size: 0.8rem;
-		padding: 0;
+	.details {
+		grid-area: details;
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		padding: 0.4rem;
 		margin: 0;
-		text-align: center;
 	}
 
 	.stats {
 		all: unset;
+		grid-area: stats;
 		display: grid;
-		grid-auto-flow: column;
-		border-radius: 0.4rem;
-		padding: 0.4rem;
+		gap: 0.4rem;
+		grid-template-columns: 1fr 1fr;
 
 		li {
 			all: unset;
 			display: flex;
+			gap: 0.2rem;
 			flex-direction: column;
+			background-color: var(--background-primary);
+			border: var(--border-width) solid var(--background-modifier-border);
+			border-radius: 0.5rem;
+			padding: 0.4rem;
 
 			h3 {
 				grid-area: title;
@@ -130,51 +167,5 @@
 				}
 			}
 		}
-	}
-
-	.info {
-		border-radius: 0.4rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.4rem;
-		padding: 0.4rem;
-		margin: 0;
-	}
-
-	.papyros {
-		position: relative;
-		color: #3e2723;
-		filter: drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.6));
-	}
-
-	.papyros::before {
-		content: "";
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		z-index: -1;
-
-		/* Inherit the rounded corners from the parent article */
-		border-radius: inherit;
-
-		/* Base paper color */
-		background-color: #e8d7a7;
-		background-size: cover;
-
-		background-image:
-            /* 1. General Paper Grit (Small, even noise) */
-			url("data:image/svg+xml,%3Csvg viewBox='0 0 500 500' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.15'/%3E%3C/svg%3E"),
-			/* 2. Vertical Organic Fibers */
-			url("data:image/svg+xml,%3Csvg viewBox='0 0 500 500' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='vFibers'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.2 0.01' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23vFibers)' opacity='0.08'/%3E%3C/svg%3E"),
-			/* 3. Horizontal Organic Fibers */
-			url("data:image/svg+xml,%3Csvg viewBox='0 0 500 500' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='hFibers'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.01 0.2' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23hFibers)' opacity='0.08'/%3E%3C/svg%3E"),
-			/* 4. Vignette / Darkened edges */
-			radial-gradient(
-					ellipse at center,
-					transparent 40%,
-					rgba(160, 110, 60, 0.6) 100%
-				);
 	}
 </style>
