@@ -1,5 +1,6 @@
 import { Abundance } from "./abundance";
 import type { Coin } from "./coin";
+import type { SlotUsage } from "./slot-usage";
 
 export interface GearType {
 	name: string;

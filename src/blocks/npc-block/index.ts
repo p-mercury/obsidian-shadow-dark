@@ -7,20 +7,36 @@ import {
 import { mount, unmount } from "svelte";
 import ReadBlock from "./read-block.svelte";
 import { unmarshalNpc, type Npc } from "../../types/npc.svelte";
+import { Item } from "../../types/item-table.svelte";
+import type Shadowdark from "../../main";
 
 class NpcBlockChild extends MarkdownRenderChild {
 	private component: ReturnType<typeof mount> | undefined;
 
 	constructor(
 		containerEl: HTMLElement,
-		private app: App,
+		private scope: Shadowdark,
 		private source: string,
 		private ctx: MarkdownPostProcessorContext,
 	) {
 		super(containerEl);
 	}
 
-	onload() {
+	async onload() {
+		await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
+
+		const isLivePreview =
+			this.containerEl.closest(".markdown-source-view") !== null;
+
+		const isEmbed =
+			this.containerEl.closest(".internal-embed, .markdown-embed") !== null;
+
+		const isEditable = isLivePreview && !isEmbed;
+
+		if (isEditable) {
+			return;
+		}
+
 		let character: Npc;
 
 		try {
@@ -30,52 +46,37 @@ class NpcBlockChild extends MarkdownRenderChild {
 			return;
 		}
 
-		window.setTimeout(() => {
-			const isLivePreview =
-				this.containerEl.closest(".markdown-source-view") !== null;
+		console.log(this.scope.items);
 
-			const isEmbed =
-				this.containerEl.closest(".internal-embed, .markdown-embed") !== null;
+		this.component = mount(ReadBlock, {
+			target: this.containerEl,
+			props: {
+				npc: character,
+				onSave: async (updated: Npc) => {
+					const section = this.ctx.getSectionInfo(this.containerEl);
+					if (!section) return;
 
-			const isEditable = isLivePreview && !isEmbed;
+					const file = this.scope.app.vault.getAbstractFileByPath(
+						this.ctx.sourcePath,
+					);
 
-			if (isEditable) {
-				return;
-			}
+					if (!(file instanceof TFile)) return;
 
-			this.component = mount(ReadBlock, {
-				target: this.containerEl,
-				props: {
-					npc: character,
-					onSave: async (updated: Npc) => {
-						const section = this.ctx.getSectionInfo(this.containerEl);
+					await this.scope.app.vault.process(file, (content) => {
+						const lines = content.split(/\r?\n/);
+						const replacement = updated.marshal().split("\n");
 
-						if (!section) {
-							return;
-						}
-
-						const file = this.app.vault.getAbstractFileByPath(
-							this.ctx.sourcePath,
+						lines.splice(
+							section.lineStart,
+							section.lineEnd - section.lineStart + 2,
+							...replacement,
 						);
 
-						if (!(file instanceof TFile)) {
-							return;
-						}
-
-						await this.app.vault.process(file, (content) => {
-							const lines = content.split(/\r?\n/);
-							const replacement = updated.marshal().split("\n");
-							lines.splice(
-								section.lineStart,
-								section.lineEnd - section.lineStart + 2,
-								...replacement,
-							);
-							return lines.join("\n");
-						});
-					},
+						return lines.join("\n");
+					});
 				},
-			});
-		}, 0);
+			},
+		});
 	}
 
 	onunload() {
@@ -86,10 +87,10 @@ class NpcBlockChild extends MarkdownRenderChild {
 }
 
 export function renderNpcBlock(
-	app: App,
+	scope: Shadowdark,
 	source: string,
 	el: HTMLElement,
 	ctx: MarkdownPostProcessorContext,
 ) {
-	ctx.addChild(new NpcBlockChild(el, app, source, ctx));
+	ctx.addChild(new NpcBlockChild(el, scope, source, ctx));
 }

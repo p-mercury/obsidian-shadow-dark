@@ -1,4 +1,4 @@
-type SlotUsage =
+export type SlotUsage =
 	| {
 			freeToCarry?: number;
 			slotsPerItem: number;

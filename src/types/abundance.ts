@@ -4,7 +4,7 @@ export enum Abundance {
 	ABUNDANT = "ABUNDANT",
 }
 
-export function getAbundance(t: Abundance): string {
+export function getAbundanceName(t: Abundance): string {
 	switch (t) {
 		case Abundance.SCARCE:
 			return "Scarce";

@@ -2,6 +2,7 @@ import { Abundance } from "./abundance";
 import type { Coin } from "./coin";
 import type { DiceRoll } from "./dice-roll";
 import { Range } from "./range";
+import type { SlotUsage } from "./slot-usage";
 
 export interface WeaponType {
 	name: string;

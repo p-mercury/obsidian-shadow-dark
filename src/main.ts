@@ -1,8 +1,7 @@
-import { Plugin, TFolder } from "obsidian";
-
+import { Plugin, TAbstractFile, TFile, TFolder } from "obsidian";
+import { Item } from "./types/item-table.svelte";
 import { DEFAULT_SETTINGS, type ShadowdarkSettings } from "./settings";
 import { getRandomPc } from "./generators/random-pc";
-
 import { renderPcBlock } from "./blocks/pc-block";
 import { renderNpcBlock } from "./blocks/npc-block";
 import { marshalPc } from "./types/pc";
@@ -12,12 +11,75 @@ import { marshalItemList } from "./types/item-list";
 import { renderItemListBlock } from "./blocks/item-list";
 import { Age } from "./types/age";
 import { Abundance } from "./types/abundance";
+import { renderItemTable } from "./blocks/item-table";
 
 export default class Shadowdark extends Plugin {
 	settings!: ShadowdarkSettings;
+	fileItems = new Map<string, { source: string; items: Item[] }>();
+
+	get items() {
+		return [...this.fileItems.values()].flatMap(({ items }) => items);
+	}
 
 	async onload(): Promise<void> {
 		await this.loadSettings();
+
+		await Promise.all(
+			this.app.vault
+				.getMarkdownFiles()
+				.map((file) => this.updateItemCache(file)),
+		);
+
+		this.registerEvent(
+			this.app.vault.on("modify", (file) => {
+				if (file instanceof TFile && file.extension === "md") {
+					void this.updateItemCache(file);
+				}
+			}),
+		);
+
+		this.registerEvent(
+			this.app.vault.on("create", (file) => {
+				if (file instanceof TFile && file.extension === "md") {
+					void this.updateItemCache(file);
+				}
+			}),
+		);
+
+		this.registerEvent(
+			this.app.vault.on("delete", (file) => {
+				this.removeItemCache(file);
+			}),
+		);
+
+		this.registerEvent(
+			this.app.vault.on("rename", (file, oldPath) => {
+				this.fileItems.delete(oldPath);
+
+				if (file instanceof TFile && file.extension === "md") {
+					void this.updateItemCache(file);
+				}
+			}),
+		);
+
+		this.registerMarkdownPostProcessor((el, ctx) => {
+			const section = ctx.getSectionInfo(el);
+			if (!section) {
+				return;
+			}
+
+			const marker = "^shadowdark-items";
+			if (!section.text.split(/\r?\n/).some((line) => line.trim() === marker)) {
+				return;
+			}
+
+			const table = el.querySelector("table");
+			if (!table) {
+				return;
+			}
+
+			renderItemTable(this.app, section.text, table, ctx);
+		});
 
 		this.registerMarkdownCodeBlockProcessor(
 			"shadowdark-pc",
@@ -29,7 +91,7 @@ export default class Shadowdark extends Plugin {
 		this.registerMarkdownCodeBlockProcessor(
 			"shadowdark-npc",
 			(source, el, ctx) => {
-				renderNpcBlock(this.app, source, el, ctx);
+				renderNpcBlock(this, source, el, ctx);
 			},
 		);
 
@@ -76,7 +138,9 @@ export default class Shadowdark extends Plugin {
 								character.marshal(),
 							);
 
-							await this.app.workspace.getLeaf(false).openFile(characterFile);
+							await this.app.workspace
+								.getLeaf(false)
+								.openFile(characterFile, { state: { mode: "preview" } });
 						});
 				});
 
@@ -159,7 +223,62 @@ export default class Shadowdark extends Plugin {
 
 		const characterFile = await this.app.vault.create(path, marshal(character));
 
-		await this.app.workspace.getLeaf(false).openFile(characterFile);
+		await this.app.workspace
+			.getLeaf(false)
+			.openFile(characterFile, { state: { mode: "preview" } });
+	}
+
+	private async updateItemCache(file: TFile): Promise<void> {
+		const content = await this.app.vault.cachedRead(file);
+		const lines = content.split(/\r?\n/);
+		const tables: string[] = [];
+
+		for (let i = 0; i < lines.length; i++) {
+			if (lines[i]?.trim() !== "^shadowdark-items") continue;
+
+			let end = i - 1;
+			while (end >= 0 && !lines[end]?.trim()) end--;
+
+			let start = end;
+			while (start >= 0 && lines[start]?.trim().startsWith("|")) {
+				start--;
+			}
+
+			const table = lines.slice(start + 1, end + 1).join("\n");
+			if (table) tables.push(table);
+		}
+
+		const source = tables.join("\n\n");
+
+		// The marked tables did not change.
+		if (this.fileItems.get(file.path)?.source === source) {
+			return;
+		}
+
+		if (!source) {
+			this.fileItems.delete(file.path);
+			return;
+		}
+
+		const items = (
+			await Promise.all(tables.map((table) => Item.unmarshalList(table)))
+		).flat();
+
+		this.fileItems.set(file.path, { source, items });
+	}
+
+	private removeItemCache(file: TAbstractFile): void {
+		this.fileItems.delete(file.path);
+
+		if (file instanceof TFolder) {
+			const prefix = `${file.path}/`;
+
+			for (const path of this.fileItems.keys()) {
+				if (path.startsWith(prefix)) {
+					this.fileItems.delete(path);
+				}
+			}
+		}
 	}
 
 	private async loadSettings(): Promise<void> {
