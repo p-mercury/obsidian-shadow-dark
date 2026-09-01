@@ -20,9 +20,7 @@ class NpcBlockChild extends MarkdownRenderChild {
 		super(containerEl);
 	}
 
-	async onload() {
-		await new Promise<void>((resolve) => window.setTimeout(resolve, 0));
-
+	onload() {
 		const isLivePreview =
 			this.containerEl.closest(".markdown-source-view") !== null;
 

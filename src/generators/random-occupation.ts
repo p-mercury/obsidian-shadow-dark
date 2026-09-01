@@ -2,7 +2,7 @@ export function getRandomOccupation(allowedValues?: readonly string[]) {
 	const occupations = allowedValues?.length
 		? allowedValues
 		: FANTASY_OCCUPATIONS;
-	return occupations![Math.floor(Math.random() * occupations!.length)]!;
+	return occupations[Math.floor(Math.random() * occupations!.length)]!;
 }
 
 const FANTASY_OCCUPATIONS = [

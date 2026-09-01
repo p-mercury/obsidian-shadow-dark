@@ -167,7 +167,10 @@ export default class Shadowdark extends Plugin {
 							const path = `${file.path}/${safeName}.md`;
 
 							const itemCount = Math.floor(Math.random() * 4) + 8;
-							const uniqueItems = new Map<string, any>();
+							const uniqueItems = new Map<
+								string,
+								{ id: string; quantity: number }
+							>();
 							while (uniqueItems.size < itemCount) {
 								const STACK_RANGES = {
 									[Abundance.SCARCE]: { min: 1, max: 1 },
