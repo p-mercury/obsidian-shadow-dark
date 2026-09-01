@@ -11,7 +11,7 @@
 	<ul>
 		{#each itemList.items as item}
 			<li>
-				<span>Name: {item.name}</span>
+				<span>Name: {item.id}</span>
 			</li>
 		{/each}
 	</ul>

@@ -8,14 +8,13 @@ import { getRandomWealth } from "../generators/random-wealth";
 import { Age } from "./age";
 import { Alignment } from "./alignment";
 import { Ancestry } from "./ancestry";
-import { Occupation } from "./occupation";
 import { getStatModifier } from "./stat";
 import { Wealth } from "./wealth";
 
 export interface NpcData {
 	name: string;
 	ancestry: Ancestry;
-	occupation: Occupation;
+	occupation: string;
 	age: Age;
 	alignment: Alignment;
 	wealth: Wealth;
@@ -33,7 +32,7 @@ export interface NpcData {
 
 export interface RandomNpcProps {
 	ancestries?: Ancestry[];
-	occupations?: Occupation[];
+	occupations?: string[];
 	ages?: Age[];
 	alignments?: Alignment[];
 	wealths?: Wealth[];
@@ -42,7 +41,7 @@ export interface RandomNpcProps {
 export class Npc {
 	name: string;
 	ancestry: Ancestry;
-	occupation: Occupation;
+	occupation: string;
 	age: Age;
 	alignment: Alignment;
 	wealth: Wealth;
@@ -123,7 +122,7 @@ export class Npc {
 			"```shadowdark-npc",
 			JSON.stringify(this.snapshot, null, 2),
 			"```",
-			`^npc-${this.name}`,
+			`^npc-${this.name.toLowerCase().replace(/\s+/g, "-")}`,
 		].join("\n");
 	}
 }

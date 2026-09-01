@@ -1,11 +1,9 @@
-import type { ArmorType } from "./armor-type";
-import type { WeaponType } from "./weapon-type";
-
 export type ItemList = {
 	title: string;
-	items: ((ArmorType | WeaponType) & {
+	items: {
+		id: string;
 		quantity: number;
-	})[];
+	}[];
 };
 
 export function marshalItemList(itemList: ItemList) {
@@ -13,7 +11,7 @@ export function marshalItemList(itemList: ItemList) {
 		"```shadowdark-item-list",
 		JSON.stringify(itemList, null, 2),
 		"```",
-		`^item-list-${itemList.title}`,
+		`^item-list-${itemList.title.toLowerCase().replace(/\s+/g, "-")}`,
 	].join("\n");
 }
 

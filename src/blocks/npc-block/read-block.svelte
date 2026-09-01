@@ -2,7 +2,6 @@
 	import { untrack } from "svelte";
 	import { Npc } from "../../types/npc.svelte";
 	import { getAncestryName } from "../../types/ancestry";
-	import { getOccupationName } from "../../types/occupation";
 	import { getAgeName } from "../../types/age";
 	import { getWealthName } from "../../types/wealth";
 	import NumberInput from "../../components/number-input.svelte";
@@ -33,7 +32,7 @@
 	</h2>
 	<div class="details">
 		<span><b>Ancestry:</b> {getAncestryName(_npc.ancestry)}</span>
-		<span><b>Occupation:</b> {getOccupationName(_npc.occupation)}</span>
+		<span><b>Occupation:</b> {_npc.occupation}</span>
 		<span><b>Age:</b> {getAgeName(_npc.age)}</span>
 		<span><b>Wealth:</b> {getWealthName(_npc.wealth)}</span>
 	</div>

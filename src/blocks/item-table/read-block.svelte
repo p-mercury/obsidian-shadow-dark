@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getAbundanceName } from "../../types/abundance";
-	import type { Item } from "../../types/item-table.svelte";
+	import type { Item } from "../../types/item.svelte";
 
 	let { items }: { items: Item[] } = $props();
 </script>
@@ -12,6 +12,7 @@
 			<span><b>Cost</b></span>
 			<span><b>Abundance</b></span>
 			<span><b>Stack Size</b></span>
+			<span><b>Description</b></span>
 		</li>
 		{#each items.sort((a, b) => a.cost.gold + a.cost.silver / 10 + a.cost.gold / 1000 - (b.cost.gold + b.cost.silver / 10 + b.cost.gold / 1000)) as item}
 			<li>
@@ -31,6 +32,7 @@
 					{getAbundanceName(item.abundance)}
 				</span>
 				<span>{item.stackSize}</span>
+				<span>{item.description}</span>
 			</li>
 		{/each}
 	</ul>
@@ -53,8 +55,8 @@
 	ul {
 		all: unset;
 		display: grid;
-		grid-template-columns: auto 1fr 1fr 1fr;
-		gap: 0 !important;
+		grid-template-columns: auto 1fr 1fr 1fr 1fr;
+		gap: 0;
 		padding: 0;
 		margin: 0;
 

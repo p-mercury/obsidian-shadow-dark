@@ -1,5 +1,4 @@
 import {
-	App,
 	type MarkdownPostProcessorContext,
 	MarkdownRenderChild,
 	TFile,
@@ -7,7 +6,6 @@ import {
 import { mount, unmount } from "svelte";
 import ReadBlock from "./read-block.svelte";
 import { unmarshalNpc, type Npc } from "../../types/npc.svelte";
-import { Item } from "../../types/item-table.svelte";
 import type Shadowdark from "../../main";
 
 class NpcBlockChild extends MarkdownRenderChild {
@@ -45,8 +43,6 @@ class NpcBlockChild extends MarkdownRenderChild {
 			this.containerEl.setText("Invalid character data.");
 			return;
 		}
-
-		console.log(this.scope.items);
 
 		this.component = mount(ReadBlock, {
 			target: this.containerEl,

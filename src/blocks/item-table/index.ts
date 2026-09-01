@@ -5,7 +5,7 @@ import {
 } from "obsidian";
 import { mount, unmount } from "svelte";
 import ReadBlock from "./read-block.svelte";
-import { Item } from "../../types/item-table.svelte";
+import { Item } from "../../types/item.svelte";
 
 class ItemTableBlockChild extends MarkdownRenderChild {
 	private component?: ReturnType<typeof mount>;

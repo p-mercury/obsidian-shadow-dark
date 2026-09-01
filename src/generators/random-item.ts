@@ -1,7 +1,5 @@
 import { Abundance } from "../types/abundance";
-import { ARMOR_TYPES, type ArmorType } from "../types/armor-type";
-import { GEAR_TYPES, type GearType } from "../types/gear-type";
-import { WEAPON_TYPES, type WeaponType } from "../types/weapon-type";
+import type { Item } from "../types/item.svelte";
 
 const WEIGHTS: Record<Abundance, number> = {
 	[Abundance.SCARCE]: 1,
@@ -9,11 +7,9 @@ const WEIGHTS: Record<Abundance, number> = {
 	[Abundance.ABUNDANT]: 6,
 };
 
-const ITEMS = [...GEAR_TYPES, ...ARMOR_TYPES, ...WEAPON_TYPES];
-
-export function getRandomItem(): GearType | ArmorType | WeaponType {
-	const weighted = ITEMS.flatMap((armor) =>
-		Array(WEIGHTS[armor.abundance]).fill(armor),
+export function getRandomItem(items: Item[]): Item {
+	const weighted = items.flatMap((item) =>
+		Array(WEIGHTS[item.abundance]).fill(item),
 	);
 	return weighted[Math.floor(Math.random() * weighted.length)]!;
 }

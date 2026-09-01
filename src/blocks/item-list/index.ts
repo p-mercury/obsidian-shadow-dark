@@ -1,5 +1,4 @@
 import {
-	App,
 	type MarkdownPostProcessorContext,
 	MarkdownRenderChild,
 	TFile,
@@ -11,13 +10,14 @@ import {
 	unmarshalItemList,
 	type ItemList,
 } from "../../types/item-list";
+import type Shadowdark from "../../main";
 
 class ItemListBlockChild extends MarkdownRenderChild {
 	private component: ReturnType<typeof mount> | undefined;
 
 	constructor(
 		containerEl: HTMLElement,
-		private app: App,
+		private scope: Shadowdark,
 		private source: string,
 		private ctx: MarkdownPostProcessorContext,
 	) {
@@ -49,6 +49,7 @@ class ItemListBlockChild extends MarkdownRenderChild {
 			this.component = mount(ReadBlock, {
 				target: this.containerEl,
 				props: {
+					items: this.scope.items,
 					itemList,
 					editable: isEditable,
 					onSave: async (updated: ItemList) => {
@@ -58,7 +59,7 @@ class ItemListBlockChild extends MarkdownRenderChild {
 							return;
 						}
 
-						const file = this.app.vault.getAbstractFileByPath(
+						const file = this.scope.app.vault.getAbstractFileByPath(
 							this.ctx.sourcePath,
 						);
 
@@ -66,7 +67,7 @@ class ItemListBlockChild extends MarkdownRenderChild {
 							return;
 						}
 
-						await this.app.vault.process(file, (content) => {
+						await this.scope.app.vault.process(file, (content) => {
 							const lines = content.split(/\r?\n/);
 							const replacement = marshalItemList(updated).split("\n");
 							lines.splice(
@@ -90,10 +91,10 @@ class ItemListBlockChild extends MarkdownRenderChild {
 }
 
 export function renderItemListBlock(
-	app: App,
+	scope: Shadowdark,
 	source: string,
 	el: HTMLElement,
 	ctx: MarkdownPostProcessorContext,
 ) {
-	ctx.addChild(new ItemListBlockChild(el, app, source, ctx));
+	ctx.addChild(new ItemListBlockChild(el, scope, source, ctx));
 }

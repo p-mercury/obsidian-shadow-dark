@@ -1,5 +1,5 @@
 import { Plugin, TAbstractFile, TFile, TFolder } from "obsidian";
-import { Item } from "./types/item-table.svelte";
+import { Item } from "./types/item.svelte";
 import { DEFAULT_SETTINGS, type ShadowdarkSettings } from "./settings";
 import { getRandomPc } from "./generators/random-pc";
 import { renderPcBlock } from "./blocks/pc-block";
@@ -17,8 +17,12 @@ export default class Shadowdark extends Plugin {
 	settings!: ShadowdarkSettings;
 	fileItems = new Map<string, { source: string; items: Item[] }>();
 
-	get items() {
-		return [...this.fileItems.values()].flatMap(({ items }) => items);
+	get items(): Record<string, Item> {
+		return Object.fromEntries(
+			[...this.fileItems.values()]
+				.flatMap(({ items }) => items)
+				.map((item) => [item.id, item]),
+		);
 	}
 
 	async onload(): Promise<void> {
@@ -98,7 +102,7 @@ export default class Shadowdark extends Plugin {
 		this.registerMarkdownCodeBlockProcessor(
 			"shadowdark-item-list",
 			(source, el, ctx) => {
-				renderItemListBlock(this.app, source, el, ctx);
+				renderItemListBlock(this, source, el, ctx);
 			},
 		);
 
@@ -163,7 +167,7 @@ export default class Shadowdark extends Plugin {
 							const path = `${file.path}/${safeName}.md`;
 
 							const itemCount = Math.floor(Math.random() * 4) + 8;
-							const uniqueItems = new Map();
+							const uniqueItems = new Map<string, any>();
 							while (uniqueItems.size < itemCount) {
 								const STACK_RANGES = {
 									[Abundance.SCARCE]: { min: 1, max: 1 },
@@ -171,12 +175,12 @@ export default class Shadowdark extends Plugin {
 									[Abundance.ABUNDANT]: { min: 2, max: 3 },
 								};
 
-								const item = getRandomItem();
-								if (uniqueItems.has(item.name)) continue;
+								const item = getRandomItem(Object.values(this.items));
+								if (uniqueItems.has(item.id)) continue;
 								const { min, max } = STACK_RANGES[item.abundance];
 
-								uniqueItems.set(item.name, {
-									...item,
+								uniqueItems.set(item.id, {
+									id: item.id,
 									quantity:
 										(Math.floor(Math.random() * (max - min + 1)) + min) *
 										item.stackSize,

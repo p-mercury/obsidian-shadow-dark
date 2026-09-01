@@ -5,6 +5,7 @@ import type { SlotUsage } from "./slot-usage";
 export interface ItemData {
 	id: string;
 	name: string;
+	description: string;
 	slotUsage: SlotUsage;
 	cost: Coin;
 	abundance: Abundance;
@@ -14,6 +15,7 @@ export interface ItemData {
 export class Item {
 	id: string;
 	name: string;
+	description: string;
 	slotUsage: SlotUsage;
 	cost: Coin;
 	abundance: Abundance;
@@ -22,6 +24,7 @@ export class Item {
 	constructor(data: ItemData) {
 		this.id = $state(data.id);
 		this.name = $state(data.name);
+		this.description = $state(data.description);
 		this.slotUsage = $state(data.slotUsage);
 		this.cost = $state(data.cost);
 		this.abundance = $state(data.abundance);
@@ -32,6 +35,7 @@ export class Item {
 		return {
 			id: $state.snapshot(this.id),
 			name: $state.snapshot(this.name),
+			description: $state.snapshot(this.description),
 			slotUsage: $state.snapshot(this.slotUsage),
 			cost: $state.snapshot(this.cost),
 			abundance: $state.snapshot(this.abundance),
@@ -85,6 +89,11 @@ export class Item {
 			const data = Object.fromEntries(
 				headers.map((header, index) => [header, cells[index]]),
 			);
+
+			let description = "";
+			if ("description" in data) {
+				description = data.description;
+			}
 
 			let slotUsage: SlotUsage = { slotsPerItem: 1 };
 			if ("slotsperitem" in data) {
@@ -143,6 +152,7 @@ export class Item {
 				return new Item({
 					id: data.id!,
 					name: data.name!,
+					description,
 					slotUsage,
 					cost,
 					abundance,
