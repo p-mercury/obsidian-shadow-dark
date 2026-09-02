@@ -12,6 +12,7 @@ import { renderItemListBlock } from "./blocks/item-list";
 import { Age } from "./types/age";
 import { Abundance } from "./types/abundance";
 import { renderItemTable } from "./blocks/item-table";
+import { newBase62Id } from "./generators/base-62-id";
 
 export default class Shadowdark extends Plugin {
 	settings!: ShadowdarkSettings;
@@ -72,7 +73,7 @@ export default class Shadowdark extends Plugin {
 				return;
 			}
 
-			const marker = "^shadowdark-items";
+			const marker = "^shadowdark-item-set";
 			if (!section.text.split(/\r?\n/).some((line) => line.trim() === marker)) {
 				return;
 			}
@@ -109,6 +110,32 @@ export default class Shadowdark extends Plugin {
 		this.registerEvent(
 			this.app.workspace.on("file-menu", (menu, file) => {
 				if (!(file instanceof TFolder)) return;
+
+				menu.addItem((item) => {
+					item
+						.setTitle("New Item Set")
+						.setIcon("dices")
+						.onClick(async () => {
+							const base = `${file.path}/Item Set`;
+							let path = `${base}.md`;
+							let i = 2;
+
+							while (this.app.vault.getAbstractFileByPath(path))
+								path = `${base} ${i++}.md`;
+
+							const newFile = await this.app.vault.create(
+								path,
+								`| Id         | Name         | Description         | Items Per Slot | Stack Size | Free To Carry | Cost | Abundance |
+| ---------- | ------------ | ------------------- | -------------- | ---------- | ------------- | ---- | --------- |
+| ${newBase62Id("", 10)} | Example item | Example description | 1             | 1         | 0             | 1gp  | Common    |
+^shadowdark-item-set`,
+							);
+
+							await this.app.workspace
+								.getLeaf(false)
+								.openFile(newFile, { state: { mode: "preview" } });
+						});
+				});
 
 				menu.addItem((item) => {
 					item
@@ -241,7 +268,7 @@ export default class Shadowdark extends Plugin {
 		const tables: string[] = [];
 
 		for (let i = 0; i < lines.length; i++) {
-			if (lines[i]?.trim() !== "^shadowdark-items") continue;
+			if (lines[i]?.trim() !== "^shadowdark-item-set") continue;
 
 			let end = i - 1;
 			while (end >= 0 && !lines[end]?.trim()) end--;

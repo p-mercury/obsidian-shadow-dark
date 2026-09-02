@@ -1,20 +1,12 @@
-This is a work-in-progress tool intended to make things easier for Shadowdark GMs. It supports the random generation and editing of PC and NPC character sheets, as well as the random generation of shops—with hopefully many more features to come!
+This is a work-in-progress tool intended to make things easier for Shadowdark GMs. It supports the random generation and editing of PC and NPC character sheets, as well as the random generation of shops—with, hopefully, many more features to come!
 
 ## Usage
 
 ### Items
 
-To add items, create a table somewhere in your vault and mark it with `^shadowdark-items`. It should look something like this:
+To begin, you need to add some items to the system! Right-click any folder in your project and select **New Item Set**, enter write mode and add some items to the table (ensure unique item IDs). You can have as many item sets as you want, and all items in properly marked item sets are automatically detected and included in random generation.
 
-```md
-| ID                | Name          | Slots per Item | Cost | Abundance |
-| ----------------- | ------------- | -------------- | ---- | --------- |
-| afkS82SdmW        | Leather armor | 1              | 10gp | Abundant  |
-| Zy2I7Ued1f        | Chainmail     | 1              | 60gp | Common    |
-| ^shadowdark-items |
-```
-
-All items in properly marked tables are automatically detected and included in random generation.
+In read mode the item set will hide some of the details to make the table more readable, to view the full item infomration just click on the item.
 
 ### Random Generation
 
