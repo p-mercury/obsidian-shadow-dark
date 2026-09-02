@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { describe } from "node:test";
 	import { getAbundanceName } from "../types/abundance";
 	import type { Item } from "../types/item.svelte";
 	import Dialog from "./dialog.svelte";
