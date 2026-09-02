@@ -10,7 +10,7 @@ export function newBase62Id(prefix: string, length: number): string {
 		throw new RangeError("length must be a positive integer");
 	}
 
-	const crypto = globalThis.crypto;
+	const crypto = window.crypto;
 
 	if (!crypto?.getRandomValues) {
 		throw new Error(

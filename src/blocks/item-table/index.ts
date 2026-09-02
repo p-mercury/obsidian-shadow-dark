@@ -61,17 +61,8 @@ export function renderItemTable(
 	table: HTMLTableElement,
 	ctx: MarkdownPostProcessorContext,
 ): void {
-	const parent = table.parentElement;
-
-	if (!parent) {
-		return;
-	}
-
-	const container = parent.createEl("div", {
-		cls: "shadowdark-items",
-	});
-
+	const container = document.createElement("div");
+	container.classList.add("shadowdark-items");
 	table.replaceWith(container);
-
 	ctx.addChild(new ItemTableBlockChild(container, app, source, ctx));
 }

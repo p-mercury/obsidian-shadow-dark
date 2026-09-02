@@ -294,9 +294,7 @@ export default class Shadowdark extends Plugin {
 			return;
 		}
 
-		const items = (
-			await Promise.all(tables.map((table) => Item.unmarshalList(table)))
-		).flat();
+		const items = tables.map((table) => Item.unmarshalList(table)).flat();
 
 		this.fileItems.set(file.path, { source, items });
 	}

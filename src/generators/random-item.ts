@@ -7,9 +7,9 @@ const WEIGHTS: Record<Abundance, number> = {
 	[Abundance.ABUNDANT]: 6,
 };
 
-export function getRandomItem(items: Item[]) {
+export function getRandomItem(items: Item[]): Item {
 	const weighted = items.flatMap((item) =>
-		Array(WEIGHTS[item.abundance]).fill(item),
+		Array<Item>(WEIGHTS[item.abundance]).fill(item),
 	);
 	return weighted[Math.floor(Math.random() * weighted.length)] as Item;
 }
