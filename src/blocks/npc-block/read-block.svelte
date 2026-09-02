@@ -31,6 +31,10 @@
 		{_npc.name}
 	</h2>
 	<div class="details">
+		<span><b>Level:</b> {_npc.level}</span>
+		{#if _npc.class}
+			<span><b>Class:</b> {_npc.class.name}</span>
+		{/if}
 		<span><b>Ancestry:</b> {getAncestryName(_npc.ancestry)}</span>
 		<span><b>Occupation:</b> {_npc.occupation}</span>
 		<span><b>Age:</b> {getAgeName(_npc.age)}</span>

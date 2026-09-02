@@ -11,3 +11,7 @@ In read mode the item set will hide some of the details to make the table more r
 ### Random Generation
 
 After you have defined some items, you can start generating shops. Right-click any folder in your vault and select **Random Shop** to generate a shop complete with a randomly generated NPC and inventory based on your defined items.
+
+## Disclaimer
+
+Shadowdark Tools is an independent product published under the Shadowdark RPG Third-Party License and is not affiliated with The Arcane Library, LLC. Shadowdark RPG © 2023 The Arcane Library, LLC."

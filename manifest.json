@@ -1,7 +1,7 @@
 {
 	"id": "shadow-dark",
-	"name": "ShadowDark",
-	"version": "1.0.10",
+	"name": "Shadowdark Tools",
+	"version": "1.0.11",
 	"minAppVersion": "1.13.0",
 	"description": "An expansive toolkit for Shadowdark GMs.",
 	"author": "Luis Vierroth",

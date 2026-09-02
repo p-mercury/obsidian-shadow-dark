@@ -1,10 +1,7 @@
 import { Plugin, TAbstractFile, TFile, TFolder } from "obsidian";
 import { Item } from "./types/item.svelte";
 import { DEFAULT_SETTINGS, type ShadowdarkSettings } from "./settings";
-import { getRandomPc } from "./generators/random-pc";
-import { renderPcBlock } from "./blocks/pc-block";
 import { renderNpcBlock } from "./blocks/npc-block";
-import { marshalPc } from "./types/pc";
 import { Npc } from "./types/npc.svelte";
 import { getRandomItem } from "./generators/random-item";
 import { marshalItemList } from "./types/item-list";
@@ -13,10 +10,13 @@ import { Age } from "./types/age";
 import { Abundance } from "./types/abundance";
 import { renderItemTable } from "./blocks/item-table";
 import { newBase62Id } from "./generators/base-62-id";
+import { renderClassBlock } from "./blocks/class-block";
+import { Class } from "./types/class.svelte";
 
 export default class Shadowdark extends Plugin {
 	settings!: ShadowdarkSettings;
 	fileItems = new Map<string, { source: string; items: Item[] }>();
+	fileClasses = new Map<string, { source: string; items: Class[] }>();
 
 	get items(): Record<string, Item> {
 		return Object.fromEntries(
@@ -26,19 +26,25 @@ export default class Shadowdark extends Plugin {
 		);
 	}
 
+	get classes(): Record<string, Class> {
+		return Object.fromEntries(
+			[...this.fileClasses.values()]
+				.flatMap(({ items }) => items)
+				.map((clas) => [clas.id, clas]),
+		);
+	}
+
 	async onload(): Promise<void> {
 		await this.loadSettings();
 
 		await Promise.all(
-			this.app.vault
-				.getMarkdownFiles()
-				.map((file) => this.updateItemCache(file)),
+			this.app.vault.getMarkdownFiles().map((file) => this.updateCache(file)),
 		);
 
 		this.registerEvent(
 			this.app.vault.on("modify", (file) => {
 				if (file instanceof TFile && file.extension === "md") {
-					void this.updateItemCache(file);
+					void this.updateCache(file);
 				}
 			}),
 		);
@@ -46,57 +52,55 @@ export default class Shadowdark extends Plugin {
 		this.registerEvent(
 			this.app.vault.on("create", (file) => {
 				if (file instanceof TFile && file.extension === "md") {
-					void this.updateItemCache(file);
+					void this.updateCache(file);
 				}
 			}),
 		);
 
 		this.registerEvent(
 			this.app.vault.on("delete", (file) => {
-				this.removeItemCache(file);
+				this.removeCache(file);
 			}),
 		);
 
 		this.registerEvent(
 			this.app.vault.on("rename", (file, oldPath) => {
 				this.fileItems.delete(oldPath);
+				this.fileClasses.delete(oldPath);
 
 				if (file instanceof TFile && file.extension === "md") {
-					void this.updateItemCache(file);
+					void this.updateCache(file);
 				}
 			}),
 		);
 
 		this.registerMarkdownPostProcessor((el, ctx) => {
 			const section = ctx.getSectionInfo(el);
-			if (!section) {
-				return;
-			}
+			if (!section) return;
 
 			const marker = "^shadowdark-item-set";
+
 			if (!section.text.split(/\r?\n/).some((line) => line.trim() === marker)) {
 				return;
 			}
 
 			const table = el.querySelector("table");
-			if (!table) {
-				return;
-			}
+			if (!table) return;
 
 			renderItemTable(this.app, section.text, table, ctx);
 		});
 
 		this.registerMarkdownCodeBlockProcessor(
-			"shadowdark-pc",
+			"shadowdark-npc",
 			(source, el, ctx) => {
-				renderPcBlock(this.app, source, el, ctx);
+				renderNpcBlock(this, source, el, ctx);
 			},
 		);
 
 		this.registerMarkdownCodeBlockProcessor(
-			"shadowdark-npc",
+			"shadowdark-class",
 			(source, el, ctx) => {
-				renderNpcBlock(this, source, el, ctx);
+				renderClassBlock(this, source, el, ctx);
 			},
 		);
 
@@ -120,8 +124,9 @@ export default class Shadowdark extends Plugin {
 							let path = `${base}.md`;
 							let i = 2;
 
-							while (this.app.vault.getAbstractFileByPath(path))
+							while (this.app.vault.getAbstractFileByPath(path)) {
 								path = `${base} ${i++}.md`;
+							}
 
 							const newFile = await this.app.vault.create(
 								path,
@@ -139,10 +144,29 @@ export default class Shadowdark extends Plugin {
 
 				menu.addItem((item) => {
 					item
-						.setTitle("Random PC")
+						.setTitle("New Class")
 						.setIcon("dices")
-						.onClick(() => {
-							void this.createCharacterFile(file, getRandomPc(), marshalPc);
+						.onClick(async () => {
+							const base = `${file.path}/Class`;
+							let path = `${base}.md`;
+							let i = 2;
+
+							while (this.app.vault.getAbstractFileByPath(path)) {
+								path = `${base} ${i++}.md`;
+							}
+
+							const clas = new Class({
+								id: newBase62Id("", 10),
+								name: "New Class",
+								description: "Example Class",
+								hitPoints: { count: 1, sides: 6, modifier: 0 },
+							});
+
+							const newFile = await this.app.vault.create(path, clas.marshal());
+
+							await this.app.workspace
+								.getLeaf(false)
+								.openFile(newFile, { state: { mode: "preview" } });
 						});
 				});
 
@@ -151,7 +175,9 @@ export default class Shadowdark extends Plugin {
 						.setTitle("Random NPC")
 						.setIcon("dices")
 						.onClick(async () => {
-							const character = Npc.random();
+							const character = Npc.random({
+								classes: Object.values(this.classes),
+							});
 
 							const name =
 								typeof character === "object" &&
@@ -181,6 +207,7 @@ export default class Shadowdark extends Plugin {
 						.setIcon("dices")
 						.onClick(async () => {
 							const npc = Npc.random({
+								classes: Object.values(this.classes),
 								ages: [
 									Age.YOUNG_ADULT,
 									Age.ADULT,
@@ -189,17 +216,16 @@ export default class Shadowdark extends Plugin {
 								],
 							});
 							const shopName = `${npc.name}'s Little Shop`;
-
 							const safeName = shopName.replace(/[\\/:*?"<>|]/g, "-");
 							const path = `${file.path}/${safeName}.md`;
-
 							const itemCount = Math.floor(Math.random() * 4) + 8;
 							const uniqueItems = new Map<
 								string,
 								{ id: string; quantity: number }
 							>();
+
 							while (uniqueItems.size < itemCount) {
-								const STACK_RANGES = {
+								const stackRanges = {
 									[Abundance.SCARCE]: { min: 1, max: 1 },
 									[Abundance.COMMON]: { min: 1, max: 2 },
 									[Abundance.ABUNDANT]: { min: 2, max: 3 },
@@ -207,7 +233,8 @@ export default class Shadowdark extends Plugin {
 
 								const item = getRandomItem(Object.values(this.items));
 								if (uniqueItems.has(item.id)) continue;
-								const { min, max } = STACK_RANGES[item.abundance];
+
+								const { min, max } = stackRanges[item.abundance];
 
 								uniqueItems.set(item.id, {
 									id: item.id,
@@ -216,14 +243,15 @@ export default class Shadowdark extends Plugin {
 										item.stackSize,
 								});
 							}
-							const items = [...uniqueItems.values()];
 
 							const shopFile = await this.app.vault.create(
 								path,
-								npc.marshal() +
-									"\n\n" +
-									marshalItemList({ title: "Inventory", items }),
+								`${npc.marshal()}\n\n${marshalItemList({
+									title: "Inventory",
+									items: [...uniqueItems.values()],
+								})}`,
 							);
+
 							await this.app.workspace
 								.getLeaf(false)
 								.openFile(shopFile, { state: { mode: "preview" } });
@@ -239,30 +267,7 @@ export default class Shadowdark extends Plugin {
 			.forEach((el) => el.remove());
 	}
 
-	private async createCharacterFile<T>(
-		folder: TFolder,
-		character: T,
-		marshal: (character: T) => string,
-	): Promise<void> {
-		const name =
-			typeof character === "object" &&
-			character !== null &&
-			"name" in character &&
-			typeof character.name === "string"
-				? character.name
-				: "Character";
-
-		const safeName = name.replace(/[\\/:*?"<>|]/g, "-");
-		const path = `${folder.path}/${safeName}.md`;
-
-		const characterFile = await this.app.vault.create(path, marshal(character));
-
-		await this.app.workspace
-			.getLeaf(false)
-			.openFile(characterFile, { state: { mode: "preview" } });
-	}
-
-	private async updateItemCache(file: TFile): Promise<void> {
+	private async updateCache(file: TFile): Promise<void> {
 		const content = await this.app.vault.cachedRead(file);
 		const lines = content.split(/\r?\n/);
 		const tables: string[] = [];
@@ -274,42 +279,59 @@ export default class Shadowdark extends Plugin {
 			while (end >= 0 && !lines[end]?.trim()) end--;
 
 			let start = end;
-			while (start >= 0 && lines[start]?.trim().startsWith("|")) {
-				start--;
-			}
+			while (start >= 0 && lines[start]?.trim().startsWith("|")) start--;
 
 			const table = lines.slice(start + 1, end + 1).join("\n");
 			if (table) tables.push(table);
 		}
 
-		const source = tables.join("\n\n");
+		const itemSource = tables.join("\n\n");
 
-		// The marked tables did not change.
-		if (this.fileItems.get(file.path)?.source === source) {
-			return;
+		if (this.fileItems.get(file.path)?.source !== itemSource) {
+			if (itemSource) {
+				this.fileItems.set(file.path, {
+					source: itemSource,
+					items: tables.flatMap((table) => Item.unmarshalList(table)),
+				});
+			} else {
+				this.fileItems.delete(file.path);
+			}
 		}
 
-		if (!source) {
-			this.fileItems.delete(file.path);
-			return;
+		const blocks = [
+			...content.matchAll(
+				/^(`{3,}|~{3,})shadowdark-class[^\S\r\n]*\r?\n([\s\S]*?)\r?\n\1[^\S\r\n]*$/gm,
+			),
+		].map((match) => match[2]!.trim());
+
+		const classSource = blocks.join("\n\n");
+
+		if (this.fileClasses.get(file.path)?.source !== classSource) {
+			if (classSource) {
+				this.fileClasses.set(file.path, {
+					source: classSource,
+					items: blocks.map((block) => Class.unmarshal(block)),
+				});
+			} else {
+				this.fileClasses.delete(file.path);
+			}
 		}
-
-		const items = tables.map((table) => Item.unmarshalList(table)).flat();
-
-		this.fileItems.set(file.path, { source, items });
 	}
 
-	private removeItemCache(file: TAbstractFile): void {
+	private removeCache(file: TAbstractFile): void {
 		this.fileItems.delete(file.path);
+		this.fileClasses.delete(file.path);
 
-		if (file instanceof TFolder) {
-			const prefix = `${file.path}/`;
+		if (!(file instanceof TFolder)) return;
 
-			for (const path of this.fileItems.keys()) {
-				if (path.startsWith(prefix)) {
-					this.fileItems.delete(path);
-				}
-			}
+		const prefix = `${file.path}/`;
+
+		for (const path of this.fileItems.keys()) {
+			if (path.startsWith(prefix)) this.fileItems.delete(path);
+		}
+
+		for (const path of this.fileClasses.keys()) {
+			if (path.startsWith(prefix)) this.fileClasses.delete(path);
 		}
 	}
 

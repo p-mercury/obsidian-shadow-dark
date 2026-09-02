@@ -8,6 +8,7 @@
 		"target": "ES2021",
 		"verbatimModuleSyntax": true,
 		"strict": true,
+		"noUnusedParameters": true,
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
 		"noUncheckedIndexedAccess": true,

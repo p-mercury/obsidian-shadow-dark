@@ -5,10 +5,10 @@ import {
 } from "obsidian";
 import { mount, unmount } from "svelte";
 import ReadBlock from "./read-block.svelte";
-import { Npc } from "../../types/npc.svelte";
 import type Shadowdark from "../../main";
+import { Class } from "../../types/class.svelte";
 
-class NpcBlockChild extends MarkdownRenderChild {
+class ClassBlockChild extends MarkdownRenderChild {
 	private component: ReturnType<typeof mount> | undefined;
 
 	constructor(
@@ -33,10 +33,10 @@ class NpcBlockChild extends MarkdownRenderChild {
 			return;
 		}
 
-		let character: Npc;
+		let clas: Class;
 
 		try {
-			character = Npc.unmarshal(this.source, this.scope.classes);
+			clas = Class.unmarshal(this.source);
 		} catch {
 			this.containerEl.setText("Invalid character data.");
 			return;
@@ -45,8 +45,8 @@ class NpcBlockChild extends MarkdownRenderChild {
 		this.component = mount(ReadBlock, {
 			target: this.containerEl,
 			props: {
-				npc: character,
-				onSave: async (updated: Npc) => {
+				class: clas,
+				onSave: async (updated: Class) => {
 					const section = this.ctx.getSectionInfo(this.containerEl);
 					if (!section) return;
 
@@ -80,11 +80,11 @@ class NpcBlockChild extends MarkdownRenderChild {
 	}
 }
 
-export function renderNpcBlock(
+export function renderClassBlock(
 	scope: Shadowdark,
 	source: string,
 	el: HTMLElement,
 	ctx: MarkdownPostProcessorContext,
 ) {
-	ctx.addChild(new NpcBlockChild(el, scope, source, ctx));
+	ctx.addChild(new ClassBlockChild(el, scope, source, ctx));
 }
