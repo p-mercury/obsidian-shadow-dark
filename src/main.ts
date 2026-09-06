@@ -12,6 +12,9 @@ import { renderItemTable } from "./blocks/item-table";
 import { newBase62Id } from "./generators/base-62-id";
 import { renderClassBlock } from "./blocks/class-block";
 import { Class } from "./types/class.svelte";
+import { MONSTERS } from "./types/monsters";
+import type { Monster } from "./types/monster.svelte";
+import { renderEncoutnerTableBlock } from "./blocks/encounter-table";
 
 export default class Shadowdark extends Plugin {
 	settings!: ShadowdarkSettings;
@@ -32,6 +35,10 @@ export default class Shadowdark extends Plugin {
 				.flatMap(({ items }) => items)
 				.map((clas) => [clas.id, clas]),
 		);
+	}
+
+	get monsters(): Record<string, Monster> {
+		return MONSTERS;
 	}
 
 	async onload(): Promise<void> {
@@ -89,6 +96,13 @@ export default class Shadowdark extends Plugin {
 
 			renderItemTable(this.app, section.text, table, ctx);
 		});
+
+		this.registerMarkdownCodeBlockProcessor(
+			"shadowdark-encounter-table",
+			(source, el, ctx) => {
+				renderEncoutnerTableBlock(this, source, el, ctx);
+			},
+		);
 
 		this.registerMarkdownCodeBlockProcessor(
 			"shadowdark-npc",

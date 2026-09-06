@@ -13,33 +13,41 @@ export interface ItemData {
 }
 
 export class Item {
-	id: string;
+	readonly id: string;
 	name: string;
 	description: string;
 	slotUsage: SlotUsage;
 	cost: Coin;
 	abundance: Abundance;
-	stackSize: number;
+	_stackSize: number;
 
 	constructor(data: ItemData) {
-		this.id = $state(data.id);
+		this.id = data.id;
 		this.name = $state(data.name);
 		this.description = $state(data.description);
 		this.slotUsage = $state(data.slotUsage);
 		this.cost = $state(data.cost);
 		this.abundance = $state(data.abundance);
-		this.stackSize = $state(data.stackSize);
+		this._stackSize = $state(Math.round(data.stackSize));
+	}
+
+	get stackSize() {
+		return this._stackSize;
+	}
+
+	set armorClass(v: number) {
+		this._stackSize = Math.round(v);
 	}
 
 	get snapshot(): ItemData {
 		return {
-			id: $state.snapshot(this.id),
+			id: this.id,
 			name: $state.snapshot(this.name),
 			description: $state.snapshot(this.description),
 			slotUsage: $state.snapshot(this.slotUsage),
 			cost: $state.snapshot(this.cost),
 			abundance: $state.snapshot(this.abundance),
-			stackSize: $state.snapshot(this.stackSize),
+			stackSize: $state.snapshot(this._stackSize),
 		};
 	}
 

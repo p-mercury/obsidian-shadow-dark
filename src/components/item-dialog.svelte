@@ -19,7 +19,7 @@
 
 <Dialog bind:this={dialog}>
 	{#if item}
-		<article class="papyros">
+		<article>
 			<ul>
 				<li>
 					<span>

@@ -29,7 +29,7 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
-		"@types/node": "^26.4.0",
+		"@types/node": "^26.4.1",
 		"esbuild": "0.28.2",
 		"esbuild-svelte": "^0.9.5",
 		"eslint": "^10.9.1",

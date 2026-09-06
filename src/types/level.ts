@@ -21,5 +21,5 @@ export function unmarshalLevel(value: string): Level {
 	if (!Number.isInteger(level) || level < Level.ONE || level > Level.TEN) {
 		return Level.ONE;
 	}
-	return level as Level;
+	return level;
 }
