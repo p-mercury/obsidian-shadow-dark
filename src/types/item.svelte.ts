@@ -70,7 +70,7 @@ export class Item {
 		}
 	}
 
-	static unmarshalList(content: string) {
+	static unmarshalSet(content: string) {
 		const lines = content
 			.trim()
 			.split("\n")
@@ -156,19 +156,15 @@ export class Item {
 				}
 			}
 
-			try {
-				return new Item({
-					id: data.id!,
-					name: data.name!,
-					description,
-					slotUsage,
-					cost,
-					abundance,
-					stackSize,
-				});
-			} catch {
-				throw new Error("Invalid item table row.");
-			}
+			return new Item({
+				id: data.id!,
+				name: data.name!,
+				description,
+				slotUsage,
+				cost,
+				abundance,
+				stackSize,
+			});
 		});
 	}
 }

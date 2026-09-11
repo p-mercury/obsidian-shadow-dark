@@ -20,27 +20,29 @@
 <Dialog bind:this={dialog}>
 	{#if monster}
 		<article>
+			{#if monster.image}
+				<img src={monster.image} alt={monster.name} />
+			{/if}
 			<ul>
 				<li>
 					<span>
-						<b>Name:</b>
-						{monster.name}
+						<b>{monster.name}</b>
 					</span>
 				</li>
 				<li>
 					<span>
-						<b>Level:</b>
+						Level:
 						{monster.level}
 					</span>
 				</li>
 				<li>
 					<span>
-						<b>Movement:</b>
+						Movement:
 						{getRangeName(monster.movement)}
 					</span>
 				</li>
 				<li>
-					<b>Description:</b>
+					Description:
 					{monster.description}
 				</li>
 			</ul>
@@ -52,15 +54,28 @@
 	article {
 		font-family: PlaypenSans;
 		border-radius: 1rem;
-		padding: 1rem;
+		padding: 0.8rem;
 		margin: 0;
-		width: max-content;
-		max-width: 50rem;
+		width: 90dvw;
+		max-width: 40rem;
 		overflow: hidden;
+		display: grid;
+		gap: 1rem;
+		grid:
+			"image info" 10rem
+			/ 10rem auto;
+	}
+
+	img {
+		grid-area: image;
+		border-radius: 1rem;
+		width: 10rem;
+		height: 10rem;
 	}
 
 	ul {
 		all: unset;
+		grid-area: info;
 		display: flex;
 		flex-direction: column;
 		gap: 0;

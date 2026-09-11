@@ -1,20 +1,21 @@
 <script lang="ts">
 	import { setIcon } from "obsidian";
-	import MonsterDialog from "../../components/monster-dialog.svelte";
-	import { Abundance, getAbundanceName } from "../../types/abundance";
-	import type { EncounterTable } from "../../types/encounter-table";
-	import { Monster } from "../../types/monster.svelte";
+	import { type EncounterTable } from "../../types/encounter-table";
 	import { marshalRollRange } from "../../types/roll-range";
+	import EncounterDialog from "../../components/encounter-dialog.svelte";
+	import type Shadowdark from "../../main";
 
 	let {
-		monsters,
+		scope,
 		encounterTable,
+		onSave,
 	}: {
-		monsters: Record<string, Monster>;
+		scope: Shadowdark;
 		encounterTable: EncounterTable;
+		onSave: (npc: EncounterTable) => void;
 	} = $props();
 
-	let monsterDialog = $state<ReturnType<typeof MonsterDialog>>();
+	let encounterDialog = $state<ReturnType<typeof EncounterDialog>>();
 	let randomButton = $state<HTMLElement>();
 
 	let roll = $state<number>();
@@ -22,9 +23,14 @@
 	$effect(() => {
 		if (randomButton) setIcon(randomButton, "dices");
 	});
+
+	let _encounterTable = $state(encounterTable);
+	$effect(() => {
+		onSave(_encounterTable);
+	});
 </script>
 
-<MonsterDialog bind:this={monsterDialog} />
+<EncounterDialog {scope} bind:this={encounterDialog} />
 
 <article class="papyros">
 	<header>
@@ -32,19 +38,17 @@
 			{encounterTable.title}
 		</h2>
 		<button
-			class="random"
 			onclick={() =>
-				(roll = Math.floor(Math.random() * encounterTable.dice) + 1)}
+				(roll = Math.floor(Math.random() * encounterTable.die) + 1)}
 		>
-			d{encounterTable.dice}
+			d{encounterTable.die}
 			<div bind:this={randomButton}></div>
 		</button>
 	</header>
 	<ul>
 		<li class="header">
-			<span><b>Range</b></span>
-			<span><b>Name</b></span>
-			<span><b>Level</b></span>
+			<span><b>d{encounterTable.die}</b></span>
+			<span><b>Details</b></span>
 		</li>
 		{#each encounterTable.encounters as encounter}
 			<li
@@ -52,24 +56,10 @@
 					roll >= encounter.range.min &&
 					roll <= encounter.range.max}
 			>
-				{#if encounter.id}
-					{@const monster = monsters[encounter.id]}
-					{#if monster}
-						<button onclick={() => monsterDialog?.showModal(monster)}>
-							<span>
-								{marshalRollRange(encounter.range)}
-							</span>
-							<span>{monster.name}</span>
-							<span>{monster.level}</span>
-						</button>
-					{/if}
-				{:else}
-					<span>
-						{marshalRollRange(encounter.range)}
-					</span>
-					<span>Nothing Happens</span>
-					<span>-</span>
-				{/if}
+				<button onclick={() => encounterDialog?.showModal(encounter)}>
+					<span>{marshalRollRange(encounter.range)}</span>
+					<span>{encounter.title}</span>
+				</button>
 			</li>
 		{/each}
 	</ul>
@@ -85,17 +75,10 @@
 		border-radius: 1rem;
 		padding: 0;
 		margin: 1rem 0;
+		min-width: 20rem;
 		width: max-content;
 		max-width: 40rem;
 		overflow: hidden;
-	}
-
-	.random {
-		height: 100%;
-		border-radius: 1rem;
-		cursor: pointer;
-		display: flex;
-		gap: 0.2rem;
 	}
 
 	header {
@@ -103,15 +86,34 @@
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
+		align-content: center;
 		align-items: center;
 		padding: 0.4rem 0.6rem;
-	}
+		gap: 1rem;
 
-	h2 {
-		font-weight: 600;
-		font-size: 1.1rem;
-		margin: 0;
-		color: var(--text-accent);
+		h2 {
+			font-weight: 600;
+			font-size: 1.2rem;
+			margin: 0;
+			color: var(--text-accent);
+		}
+
+		button {
+			height: 100%;
+			cursor: pointer;
+			display: flex;
+			gap: 0.2rem;
+			font-weight: 600;
+			font-size: 0.9rem;
+			color: var(--text);
+			background-color: var(--interactive-normal);
+			border-radius: var(--button-radius);
+			border: var(--border-width) solid var(--background-modifier-border);
+
+			&:hover {
+				background-color: var(--interactive-hover);
+			}
+		}
 	}
 
 	b {
@@ -121,7 +123,7 @@
 	ul {
 		all: unset;
 		display: grid;
-		grid-template-columns: auto max-content max-content max-content;
+		grid-template-columns: auto 1fr auto;
 		gap: 0;
 		padding: 0;
 		margin: 0;

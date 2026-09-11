@@ -1,5 +1,4 @@
 import {
-	App,
 	type MarkdownPostProcessorContext,
 	MarkdownRenderChild,
 } from "obsidian";
@@ -7,14 +6,12 @@ import { mount, unmount } from "svelte";
 import ReadBlock from "./read-block.svelte";
 import { Item } from "../../types/item.svelte";
 
-class ItemTableBlockChild extends MarkdownRenderChild {
+class MonsterSetBlockChild extends MarkdownRenderChild {
 	private component?: ReturnType<typeof mount>;
 
 	constructor(
 		containerEl: HTMLElement,
-		private readonly app: App,
 		private readonly source: string,
-		private readonly ctx: MarkdownPostProcessorContext,
 	) {
 		super(containerEl);
 	}
@@ -23,7 +20,7 @@ class ItemTableBlockChild extends MarkdownRenderChild {
 		let items: Item[];
 
 		try {
-			items = Item.unmarshalList(this.source);
+			items = Item.unmarshalSet(this.source);
 		} catch {
 			this.containerEl.setText("Invalid item table.");
 			return;
@@ -55,8 +52,7 @@ class ItemTableBlockChild extends MarkdownRenderChild {
 	}
 }
 
-export function renderItemTable(
-	app: App,
+export function renderMonsterSet(
 	source: string,
 	table: HTMLTableElement,
 	ctx: MarkdownPostProcessorContext,
@@ -64,5 +60,5 @@ export function renderItemTable(
 	const container = document.createElement("div");
 	container.classList.add("shadowdark-items");
 	table.replaceWith(container);
-	ctx.addChild(new ItemTableBlockChild(container, app, source, ctx));
+	ctx.addChild(new MonsterSetBlockChild(container, source));
 }

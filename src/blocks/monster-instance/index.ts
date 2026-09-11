@@ -6,13 +6,9 @@ import {
 import { mount, unmount } from "svelte";
 import ReadBlock from "./read-block.svelte";
 import type Shadowdark from "../../main";
-import {
-	marshalEncounterTable,
-	unmarshalEncounterTable,
-	type EncounterTable,
-} from "../../types/encounter-table";
+import { MonsterInstance } from "../../types/monster-instance.svelte";
 
-class EncoutnerTableBlockChild extends MarkdownRenderChild {
+class MonsterInstanceBlockChild extends MarkdownRenderChild {
 	private component: ReturnType<typeof mount> | undefined;
 
 	constructor(
@@ -25,11 +21,11 @@ class EncoutnerTableBlockChild extends MarkdownRenderChild {
 	}
 
 	onload() {
-		let encounterTable: EncounterTable;
+		let monsterInstance: MonsterInstance;
 		try {
-			encounterTable = unmarshalEncounterTable(this.source);
+			monsterInstance = MonsterInstance.unmarshal(this.source);
 		} catch {
-			this.containerEl.setText("Invalid encounter table data!");
+			this.containerEl.setText("Invalid monster instance data!");
 			return;
 		}
 
@@ -37,8 +33,8 @@ class EncoutnerTableBlockChild extends MarkdownRenderChild {
 			target: this.containerEl,
 			props: {
 				scope: this.scope,
-				encounterTable,
-				onSave: async (updated: EncounterTable) => {
+				monsterInstance,
+				onSave: async (updated: MonsterInstance) => {
 					const section = this.ctx.getSectionInfo(this.containerEl);
 					if (!section) return;
 
@@ -55,7 +51,7 @@ class EncoutnerTableBlockChild extends MarkdownRenderChild {
 						lines.splice(
 							section.lineStart,
 							section.lineEnd - section.lineStart + 2,
-							marshalEncounterTable(updated),
+							updated.marshal(),
 						);
 
 						return lines.join(newline);
@@ -72,11 +68,11 @@ class EncoutnerTableBlockChild extends MarkdownRenderChild {
 	}
 }
 
-export function renderEncoutnerTableBlock(
+export function renderMonsterInstanceBlock(
 	scope: Shadowdark,
 	source: string,
 	el: HTMLElement,
 	ctx: MarkdownPostProcessorContext,
 ) {
-	ctx.addChild(new EncoutnerTableBlockChild(el, scope, source, ctx));
+	ctx.addChild(new MonsterInstanceBlockChild(el, scope, source, ctx));
 }

@@ -43,3 +43,13 @@ export function unmarshalDiceRoll(value: string): DiceRoll {
 
 	return { count, sides, modifier };
 }
+
+export function executeDiceRoll(value: DiceRoll): number {
+	let result = value.modifier;
+
+	for (let index = 0; index < value.count; index++) {
+		result += Math.floor(Math.random() * value.sides) + 1;
+	}
+
+	return result;
+}

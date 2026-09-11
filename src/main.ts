@@ -1,20 +1,22 @@
-import { Plugin, TAbstractFile, TFile, TFolder } from "obsidian";
+import { normalizePath, Plugin, TAbstractFile, TFile, TFolder } from "obsidian";
 import { Item } from "./types/item.svelte";
 import { DEFAULT_SETTINGS, type ShadowdarkSettings } from "./settings";
-import { renderNpcBlock } from "./blocks/npc-block";
+import { renderNpcBlock } from "./blocks/npc";
 import { Npc } from "./types/npc.svelte";
 import { getRandomItem } from "./generators/random-item";
 import { marshalItemList } from "./types/item-list";
 import { renderItemListBlock } from "./blocks/item-list";
 import { Age } from "./types/age";
 import { Abundance } from "./types/abundance";
-import { renderItemTable } from "./blocks/item-table";
+import { renderItemSet } from "./blocks/item-set";
 import { newBase62Id } from "./generators/base-62-id";
-import { renderClassBlock } from "./blocks/class-block";
+import { renderClassBlock } from "./blocks/class";
 import { Class } from "./types/class.svelte";
 import { MONSTERS } from "./types/monsters";
-import type { Monster } from "./types/monster.svelte";
+import { Monster } from "./types/monster.svelte";
 import { renderEncoutnerTableBlock } from "./blocks/encounter-table";
+import { renderMonsterBlock } from "./blocks/monster";
+import { renderMonsterInstanceBlock } from "./blocks/monster-instance";
 
 export default class Shadowdark extends Plugin {
 	settings!: ShadowdarkSettings;
@@ -38,7 +40,29 @@ export default class Shadowdark extends Plugin {
 	}
 
 	get monsters(): Record<string, Monster> {
-		return MONSTERS;
+		const pluginDir = this.manifest.dir;
+
+		if (!pluginDir) {
+			console.error("[Shadowdark] Could not determine plugin directory.");
+			return MONSTERS;
+		}
+
+		return Object.fromEntries(
+			Object.entries(MONSTERS).map(([id, monster]) => {
+				const image = monster.image
+					? this.app.vault.adapter.getResourcePath(
+							normalizePath(`${pluginDir}/${monster.image}`),
+						)
+					: undefined;
+				return [
+					id,
+					new Monster({
+						...monster.snapshot,
+						image,
+					}),
+				];
+			}),
+		) as Record<string, Monster>;
 	}
 
 	async onload(): Promise<void> {
@@ -94,7 +118,7 @@ export default class Shadowdark extends Plugin {
 			const table = el.querySelector("table");
 			if (!table) return;
 
-			renderItemTable(this.app, section.text, table, ctx);
+			renderItemSet(section.text, table, ctx);
 		});
 
 		this.registerMarkdownCodeBlockProcessor(
@@ -122,6 +146,20 @@ export default class Shadowdark extends Plugin {
 			"shadowdark-item-list",
 			(source, el, ctx) => {
 				renderItemListBlock(this, source, el, ctx);
+			},
+		);
+
+		this.registerMarkdownCodeBlockProcessor(
+			"shadowdark-monster",
+			(source, el, ctx) => {
+				renderMonsterBlock(this, source, el, ctx);
+			},
+		);
+
+		this.registerMarkdownCodeBlockProcessor(
+			"shadowdark-monster-instance",
+			(source, el, ctx) => {
+				renderMonsterInstanceBlock(this, source, el, ctx);
 			},
 		);
 
@@ -164,7 +202,6 @@ export default class Shadowdark extends Plugin {
 							const base = `${file.path}/Class`;
 							let path = `${base}.md`;
 							let i = 2;
-
 							while (this.app.vault.getAbstractFileByPath(path)) {
 								path = `${base} ${i++}.md`;
 							}
@@ -305,7 +342,7 @@ export default class Shadowdark extends Plugin {
 			if (itemSource) {
 				this.fileItems.set(file.path, {
 					source: itemSource,
-					items: tables.flatMap((table) => Item.unmarshalList(table)),
+					items: tables.flatMap((table) => Item.unmarshalSet(table)),
 				});
 			} else {
 				this.fileItems.delete(file.path);

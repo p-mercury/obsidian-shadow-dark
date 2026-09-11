@@ -58,12 +58,10 @@ class NpcBlockChild extends MarkdownRenderChild {
 
 					await this.scope.app.vault.process(file, (content) => {
 						const lines = content.split(/\r?\n/);
-						const replacement = updated.marshal().split("\n");
-
 						lines.splice(
 							section.lineStart,
 							section.lineEnd - section.lineStart + 2,
-							...replacement,
+							updated.marshal(),
 						);
 
 						return lines.join("\n");

@@ -1,98 +1,87 @@
 <script lang="ts">
-	import { untrack } from "svelte";
-	import { Npc } from "../../types/npc.svelte";
-	import { getAncestryName } from "../../types/ancestry";
-	import { getAgeName } from "../../types/age";
-	import { getWealthName } from "../../types/wealth";
 	import NumberInput from "../../components/number-input.svelte";
 	import { getStatModifierString } from "../../types/stat";
+	import type Shadowdark from "../../main";
+	import { MonsterInstance } from "../../types/monster-instance.svelte";
 
 	let {
-		npc,
+		scope,
+		monsterInstance,
 		onSave,
 	}: {
-		npc: Npc;
-		onSave?: (npc: Npc) => void;
+		scope: Shadowdark;
+		monsterInstance: MonsterInstance;
+		onSave: (npc: MonsterInstance) => void;
 	} = $props();
 
-	let _npc = new Npc(npc);
+	let _monsterInstance = new MonsterInstance(monsterInstance);
 	$effect(() => {
-		_npc.hitPoints;
-		untrack(() => {
-			if (_npc.marshal() !== npc.marshal()) {
-				onSave?.(_npc);
-			}
-		});
+		onSave(_monsterInstance);
 	});
 </script>
 
 <article>
 	<h2>
-		{_npc.name}
+		{_monsterInstance.name}
 	</h2>
 	<div class="details">
-		<span><b>Level:</b> {_npc.level}</span>
-		{#if _npc.class}
-			<span><b>Class:</b> {_npc.class.name}</span>
-		{/if}
-		<span><b>Ancestry:</b> {getAncestryName(_npc.ancestry)}</span>
-		<span><b>Occupation:</b> {_npc.occupation}</span>
-		<span><b>Age:</b> {getAgeName(_npc.age)}</span>
-		<span><b>Wealth:</b> {getWealthName(_npc.wealth)}</span>
+		<span><b>Level:</b> {_monsterInstance.level}</span>
 	</div>
 	<ul class="stats">
 		<li>
 			<h3>HP</h3>
 			<NumberInput
 				min={0}
-				max={_npc.maxHitPoints}
-				bind:value={_npc.hitPoints}
+				max={_monsterInstance.maxHitPoints}
+				bind:value={_monsterInstance.hitPoints}
 			/>
 		</li>
 		<li>
 			<h3>AC</h3>
-			<div><span>{_npc.armorClass}</span></div>
+			<div><span>{_monsterInstance.armorClass}</span></div>
 		</li>
 		<li>
 			<h3>STR</h3>
 			<div>
-				<span>{getStatModifierString(_npc.stats.strength)}</span>
-				({_npc.stats.strength})
+				<span>{getStatModifierString(_monsterInstance.stats.strength)}</span>
+				({_monsterInstance.stats.strength})
 			</div>
 		</li>
 		<li>
 			<h3>DEX</h3>
 			<div>
-				<span>{getStatModifierString(_npc.stats.dexterity)}</span>
-				({_npc.stats.dexterity})
+				<span>{getStatModifierString(_monsterInstance.stats.dexterity)}</span>
+				({_monsterInstance.stats.dexterity})
 			</div>
 		</li>
 		<li>
 			<h3>CON</h3>
 			<div>
-				<span>{getStatModifierString(_npc.stats.constitution)}</span>
-				({_npc.stats.constitution})
+				<span>{getStatModifierString(_monsterInstance.stats.constitution)}</span
+				>
+				({_monsterInstance.stats.constitution})
 			</div>
 		</li>
 		<li>
 			<h3>INT</h3>
 			<div>
-				<span>{getStatModifierString(_npc.stats.intelligence)}</span>
-				({_npc.stats.intelligence})
+				<span>{getStatModifierString(_monsterInstance.stats.intelligence)}</span
+				>
+				({_monsterInstance.stats.intelligence})
 			</div>
 		</li>
 		<li>
 			<h3>WIS</h3>
 			<div>
-				<span>{getStatModifierString(_npc.stats.wisdom)}</span>
-				({_npc.stats.wisdom})
+				<span>{getStatModifierString(_monsterInstance.stats.wisdom)}</span>
+				({_monsterInstance.stats.wisdom})
 			</div>
 		</li>
 		<li>
 			<h3>CHA</h3>
 			<div>
-				<span>{getStatModifierString(_npc.stats.charisma)}</span>
-				({_npc.stats.charisma})
+				<span>{getStatModifierString(_monsterInstance.stats.charisma)}</span>
+				({_monsterInstance.stats.charisma})
 			</div>
 		</li>
 	</ul>
