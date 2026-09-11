@@ -1,4 +1,4 @@
-import { normalizePath, Plugin, TAbstractFile, TFile, TFolder } from "obsidian";
+import { Menu, Plugin, TAbstractFile, TFile, TFolder } from "obsidian";
 import { Item } from "./types/item.svelte";
 import { DEFAULT_SETTINGS, type ShadowdarkSettings } from "./settings";
 import { renderNpcBlock } from "./blocks/npc";
@@ -12,16 +12,20 @@ import { renderItemSet } from "./blocks/item-set";
 import { newBase62Id } from "./generators/base-62-id";
 import { renderClassBlock } from "./blocks/class";
 import { Class } from "./types/class.svelte";
-import { MONSTERS } from "./types/monsters";
 import { Monster } from "./types/monster.svelte";
 import { renderEncoutnerTableBlock } from "./blocks/encounter-table";
 import { renderMonsterBlock } from "./blocks/monster";
 import { renderMonsterInstanceBlock } from "./blocks/monster-instance";
+import { Level } from "./types/level";
+import { Alignment } from "./types/alignment";
+import { Range } from "./types/range";
+import { marshalEncounterTable } from "./types/encounter-table";
 
 export default class Shadowdark extends Plugin {
 	settings!: ShadowdarkSettings;
 	fileItems = new Map<string, { source: string; items: Item[] }>();
 	fileClasses = new Map<string, { source: string; items: Class[] }>();
+	fileMonsters = new Map<string, { source: string; items: Monster[] }>();
 
 	get items(): Record<string, Item> {
 		return Object.fromEntries(
@@ -40,29 +44,11 @@ export default class Shadowdark extends Plugin {
 	}
 
 	get monsters(): Record<string, Monster> {
-		const pluginDir = this.manifest.dir;
-
-		if (!pluginDir) {
-			console.error("[Shadowdark] Could not determine plugin directory.");
-			return MONSTERS;
-		}
-
 		return Object.fromEntries(
-			Object.entries(MONSTERS).map(([id, monster]) => {
-				const image = monster.image
-					? this.app.vault.adapter.getResourcePath(
-							normalizePath(`${pluginDir}/${monster.image}`),
-						)
-					: undefined;
-				return [
-					id,
-					new Monster({
-						...monster.snapshot,
-						image,
-					}),
-				];
-			}),
-		) as Record<string, Monster>;
+			[...this.fileMonsters.values()]
+				.flatMap(({ items }) => items)
+				.map((monster) => [monster.id, monster]),
+		);
 	}
 
 	async onload(): Promise<void> {
@@ -98,7 +84,7 @@ export default class Shadowdark extends Plugin {
 			this.app.vault.on("rename", (file, oldPath) => {
 				this.fileItems.delete(oldPath);
 				this.fileClasses.delete(oldPath);
-
+				this.fileMonsters.delete(oldPath);
 				if (file instanceof TFile && file.extension === "md") {
 					void this.updateCache(file);
 				}
@@ -164,6 +150,44 @@ export default class Shadowdark extends Plugin {
 		);
 
 		this.registerEvent(
+			this.app.workspace.on("editor-menu", (menu, editor) => {
+				menu.addItem((item) => {
+					item.setTitle("Shadowdark").setIcon("dices");
+
+					const submenu = (
+						item as unknown as { setSubmenu(): Menu }
+					).setSubmenu();
+
+					submenu.addItem((item) => {
+						item
+							.setTitle("Insert Encounter Table")
+							.setIcon("table")
+							.setSection("insert")
+							.onClick(() => {
+								editor.replaceSelection(
+									marshalEncounterTable({
+										title: "New encounter table",
+										die: 6,
+										encounters: [
+											{
+												range: { min: 1, max: 3 },
+												title: "Something happens",
+												description: "Something very interesting happens",
+											},
+											{
+												range: { min: 4, max: 6 },
+												title: "Nothin happens",
+											},
+										],
+									}),
+								);
+							});
+					});
+				});
+			}),
+		);
+
+		this.registerEvent(
 			this.app.workspace.on("file-menu", (menu, file) => {
 				if (!(file instanceof TFolder)) return;
 
@@ -206,14 +230,57 @@ export default class Shadowdark extends Plugin {
 								path = `${base} ${i++}.md`;
 							}
 
-							const clas = new Class({
-								id: newBase62Id("", 10),
-								name: "New Class",
-								description: "Example Class",
-								hitPoints: { count: 1, sides: 6, modifier: 0 },
-							});
+							const newFile = await this.app.vault.create(
+								path,
+								new Class({
+									id: newBase62Id("", 10),
+									name: "New Class",
+									description: "Example Class",
+									hitPoints: { count: 1, sides: 6, modifier: 0 },
+								}).marshal(),
+							);
 
-							const newFile = await this.app.vault.create(path, clas.marshal());
+							await this.app.workspace
+								.getLeaf(false)
+								.openFile(newFile, { state: { mode: "preview" } });
+						});
+				});
+
+				menu.addItem((item) => {
+					item
+						.setTitle("New Monster")
+						.setIcon("dices")
+						.onClick(async () => {
+							const base = `${file.path}/Monster`;
+							let path = `${base}.md`;
+							let i = 2;
+
+							while (this.app.vault.getAbstractFileByPath(path)) {
+								path = `${base} ${i++}.md`;
+							}
+
+							const newFile = await this.app.vault.create(
+								path,
+								new Monster({
+									id: newBase62Id("", 10),
+									name: "New Monster",
+									description: "Example Monster",
+									level: Level.ZERO,
+									alignment: Alignment.CHAOTIC,
+									movement: Range.NEAR,
+									hitPoints: { count: 1, sides: 4, modifier: 1 },
+									armorClass: 10,
+									attacks: ["Some sample attack"],
+									stats: {
+										strength: 0,
+										dexterity: 0,
+										constitution: 0,
+										intelligence: 0,
+										wisdom: 0,
+										charisma: 0,
+									},
+								}).marshal(),
+							);
 
 							await this.app.workspace
 								.getLeaf(false)
@@ -349,22 +416,41 @@ export default class Shadowdark extends Plugin {
 			}
 		}
 
-		const blocks = [
+		const classBlocks = [
 			...content.matchAll(
 				/^(`{3,}|~{3,})shadowdark-class[^\S\r\n]*\r?\n([\s\S]*?)\r?\n\1[^\S\r\n]*$/gm,
 			),
 		].map((match) => match[2]!.trim());
 
-		const classSource = blocks.join("\n\n");
+		const classSource = classBlocks.join("\n\n");
 
 		if (this.fileClasses.get(file.path)?.source !== classSource) {
 			if (classSource) {
 				this.fileClasses.set(file.path, {
 					source: classSource,
-					items: blocks.map((block) => Class.unmarshal(block)),
+					items: classBlocks.map((block) => Class.unmarshal(block)),
 				});
 			} else {
 				this.fileClasses.delete(file.path);
+			}
+		}
+
+		const monsterBlocks = [
+			...content.matchAll(
+				/^(`{3,}|~{3,})shadowdark-monster[^\S\r\n]*\r?\n([\s\S]*?)\r?\n\1[^\S\r\n]*$/gm,
+			),
+		].map((match) => match[2]!.trim());
+
+		const monsterSource = monsterBlocks.join("\n\n");
+
+		if (this.fileMonsters.get(file.path)?.source !== monsterSource) {
+			if (monsterSource) {
+				this.fileMonsters.set(file.path, {
+					source: monsterSource,
+					items: monsterBlocks.map((block) => Monster.unmarshal(block)),
+				});
+			} else {
+				this.fileMonsters.delete(file.path);
 			}
 		}
 	}
@@ -372,17 +458,28 @@ export default class Shadowdark extends Plugin {
 	private removeCache(file: TAbstractFile): void {
 		this.fileItems.delete(file.path);
 		this.fileClasses.delete(file.path);
+		this.fileMonsters.delete(file.path);
 
 		if (!(file instanceof TFolder)) return;
 
 		const prefix = `${file.path}/`;
 
 		for (const path of this.fileItems.keys()) {
-			if (path.startsWith(prefix)) this.fileItems.delete(path);
+			if (path.startsWith(prefix)) {
+				this.fileItems.delete(path);
+			}
 		}
 
 		for (const path of this.fileClasses.keys()) {
-			if (path.startsWith(prefix)) this.fileClasses.delete(path);
+			if (path.startsWith(prefix)) {
+				this.fileClasses.delete(path);
+			}
+		}
+
+		for (const path of this.fileMonsters.keys()) {
+			if (path.startsWith(prefix)) {
+				this.fileMonsters.delete(path);
+			}
 		}
 	}
 

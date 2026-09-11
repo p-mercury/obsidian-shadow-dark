@@ -106,7 +106,6 @@ export class MonsterInstance {
 			"```shadowdark-monster-instance",
 			JSON.stringify(this.snapshot, null, 2),
 			"```",
-			`^npc-${this.name.toLowerCase().replace(/\s+/g, "-")}`,
 		].join("\n");
 	}
 

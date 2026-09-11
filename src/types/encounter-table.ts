@@ -44,7 +44,6 @@ export function marshalEncounterTable(encounterTable: EncounterTable): string {
 		"```shadowdark-encounter-table",
 		JSON.stringify(serialized, null, 2),
 		"```",
-		`^encounter-table-${blockId}`,
 	].join("\n");
 }
 

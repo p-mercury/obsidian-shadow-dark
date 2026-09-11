@@ -54,7 +54,7 @@ class EncoutnerTableBlockChild extends MarkdownRenderChild {
 
 						lines.splice(
 							section.lineStart,
-							section.lineEnd - section.lineStart + 2,
+							section.lineEnd - section.lineStart + 1,
 							marshalEncounterTable(updated),
 						);
 

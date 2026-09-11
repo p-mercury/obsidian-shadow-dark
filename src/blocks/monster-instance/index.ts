@@ -50,7 +50,7 @@ class MonsterInstanceBlockChild extends MarkdownRenderChild {
 
 						lines.splice(
 							section.lineStart,
-							section.lineEnd - section.lineStart + 2,
+							section.lineEnd - section.lineStart + 1,
 							updated.marshal(),
 						);
 

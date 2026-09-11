@@ -150,7 +150,6 @@ export class Monster {
 				2,
 			),
 			"```",
-			`^npc-${this.name.toLowerCase().replace(/\s+/g, "-")}`,
 		].join("\n");
 	}
 

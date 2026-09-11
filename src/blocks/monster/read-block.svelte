@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { getStatModifierString } from "../../types/stat";
 	import { Monster } from "../../types/monster.svelte";
 	import type Shadowdark from "../../main";
+	import { marshalDiceRoll } from "../../types/dice-roll";
 
 	let {
 		scope,
@@ -25,60 +25,60 @@
 	</h2>
 	<div class="details">
 		<span><b>Level:</b> {_monster.level}</span>
+		<span><b>Attacks:</b></span>
+		<ul>
+			{#each _monster.attacks as attack}
+				<li>{attack}</li>
+			{/each}
+		</ul>
 	</div>
 	<ul class="stats">
-		<!-- <li>
+		<li>
 			<h3>HP</h3>
-			<NumberInput
-				min={0}
-				max={_monster.maxHitPoints}
-				bind:value={_monster.hitPoints}
-			/>
-		</li> -->
+			<div>
+				{typeof _monster.hitPoints === "number"
+					? _monster.hitPoints
+					: marshalDiceRoll(_monster.hitPoints)}
+			</div>
+		</li>
 		<li>
 			<h3>AC</h3>
-			<div><span>{_monster.armorClass}</span></div>
+			<div>{_monster.armorClass}</div>
 		</li>
 		<li>
 			<h3>STR</h3>
 			<div>
-				<span>{getStatModifierString(_monster.stats.strength)}</span>
-				({_monster.stats.strength})
+				{_monster.stats.strength}
 			</div>
 		</li>
 		<li>
 			<h3>DEX</h3>
 			<div>
-				<span>{getStatModifierString(_monster.stats.dexterity)}</span>
-				({_monster.stats.dexterity})
+				{_monster.stats.dexterity}
 			</div>
 		</li>
 		<li>
 			<h3>CON</h3>
 			<div>
-				<span>{getStatModifierString(_monster.stats.constitution)}</span>
-				({_monster.stats.constitution})
+				{_monster.stats.constitution}
 			</div>
 		</li>
 		<li>
 			<h3>INT</h3>
 			<div>
-				<span>{getStatModifierString(_monster.stats.intelligence)}</span>
-				({_monster.stats.intelligence})
+				{_monster.stats.intelligence}
 			</div>
 		</li>
 		<li>
 			<h3>WIS</h3>
 			<div>
-				<span>{getStatModifierString(_monster.stats.wisdom)}</span>
-				({_monster.stats.wisdom})
+				{_monster.stats.wisdom}
 			</div>
 		</li>
 		<li>
 			<h3>CHA</h3>
 			<div>
-				<span>{getStatModifierString(_monster.stats.charisma)}</span>
-				({_monster.stats.charisma})
+				{_monster.stats.charisma}
 			</div>
 		</li>
 	</ul>

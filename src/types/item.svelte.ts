@@ -56,7 +56,6 @@ export class Item {
 			"```shadowdark-item",
 			JSON.stringify(this.snapshot, null, 2),
 			"```",
-			`^shadowdark-item-${this.id}`,
 		].join("\n");
 	}
 

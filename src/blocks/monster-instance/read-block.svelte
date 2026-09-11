@@ -1,6 +1,5 @@
 <script lang="ts">
 	import NumberInput from "../../components/number-input.svelte";
-	import { getStatModifierString } from "../../types/stat";
 	import type Shadowdark from "../../main";
 	import { MonsterInstance } from "../../types/monster-instance.svelte";
 
@@ -43,45 +42,37 @@
 		<li>
 			<h3>STR</h3>
 			<div>
-				<span>{getStatModifierString(_monsterInstance.stats.strength)}</span>
-				({_monsterInstance.stats.strength})
+				{_monsterInstance.stats.strength}
 			</div>
 		</li>
 		<li>
 			<h3>DEX</h3>
 			<div>
-				<span>{getStatModifierString(_monsterInstance.stats.dexterity)}</span>
-				({_monsterInstance.stats.dexterity})
+				{_monsterInstance.stats.dexterity}
 			</div>
 		</li>
 		<li>
 			<h3>CON</h3>
 			<div>
-				<span>{getStatModifierString(_monsterInstance.stats.constitution)}</span
-				>
-				({_monsterInstance.stats.constitution})
+				{_monsterInstance.stats.constitution}
 			</div>
 		</li>
 		<li>
 			<h3>INT</h3>
 			<div>
-				<span>{getStatModifierString(_monsterInstance.stats.intelligence)}</span
-				>
-				({_monsterInstance.stats.intelligence})
+				{_monsterInstance.stats.intelligence}
 			</div>
 		</li>
 		<li>
 			<h3>WIS</h3>
 			<div>
-				<span>{getStatModifierString(_monsterInstance.stats.wisdom)}</span>
-				({_monsterInstance.stats.wisdom})
+				{_monsterInstance.stats.wisdom}
 			</div>
 		</li>
 		<li>
 			<h3>CHA</h3>
 			<div>
-				<span>{getStatModifierString(_monsterInstance.stats.charisma)}</span>
-				({_monsterInstance.stats.charisma})
+				{_monsterInstance.stats.charisma}
 			</div>
 		</li>
 	</ul>

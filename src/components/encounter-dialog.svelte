@@ -28,7 +28,9 @@
 				{#if encounter.monsters}
 					<button
 						onclick={async () => {
-							const file = [encounter!.description];
+							const file = [
+								`> ${encounter!.description || encounter?.title}\n`,
+							];
 
 							encounter!.monsters?.forEach((m) => {
 								const monster = scope.monsters[m.id];

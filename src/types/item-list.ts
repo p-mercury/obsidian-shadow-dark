@@ -11,7 +11,6 @@ export function marshalItemList(itemList: ItemList) {
 		"```shadowdark-item-list",
 		JSON.stringify(itemList, null, 2),
 		"```",
-		`^item-list-${itemList.title.toLowerCase().replace(/\s+/g, "-")}`,
 	].join("\n");
 }
 
