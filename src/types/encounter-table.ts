@@ -35,11 +35,6 @@ export function marshalEncounterTable(encounterTable: EncounterTable): string {
 		})),
 	};
 
-	const blockId = encounterTable.title
-		.toLowerCase()
-		.trim()
-		.replace(/\s+/g, "-");
-
 	return [
 		"```shadowdark-encounter-table",
 		JSON.stringify(serialized, null, 2),
@@ -61,7 +56,7 @@ export function unmarshalEncounterTable(content: string) {
 
 		let die = 6;
 		if (typeof data?.die === "number") {
-			die = Math.round(data.die);
+			die = Math.max(Math.round(data.die), 2);
 		}
 
 		let encounters: EncounterTable["encounters"] = [];

@@ -24,62 +24,57 @@
 		{_monster.name}
 	</h2>
 	<div class="details">
+		<span>{_monster.description}</span>
 		<span><b>Level:</b> {_monster.level}</span>
 		<span><b>Attacks:</b></span>
-		<ul>
-			{#each _monster.attacks as attack}
-				<li>{attack}</li>
+		<ul class="actions">
+			{#each _monster.actions as action}
+				<li>{action}</li>
 			{/each}
 		</ul>
+		{#if _monster.attributes.length}
+			<span><b>Attributes:</b></span>
+			<ul class="actions">
+				{#each _monster.attributes as attribute}
+					<li><b>{attribute.name}.</b> {attribute.description}</li>
+				{/each}
+			</ul>
+		{/if}
 	</div>
 	<ul class="stats">
 		<li>
 			<h3>HP</h3>
-			<div>
-				{typeof _monster.hitPoints === "number"
-					? _monster.hitPoints
-					: marshalDiceRoll(_monster.hitPoints)}
-			</div>
+			{typeof _monster.hitPoints === "number"
+				? _monster.hitPoints
+				: marshalDiceRoll(_monster.hitPoints)}
 		</li>
 		<li>
 			<h3>AC</h3>
-			<div>{_monster.armorClass}</div>
+			{_monster.armorClass}
 		</li>
 		<li>
 			<h3>STR</h3>
-			<div>
-				{_monster.stats.strength}
-			</div>
-		</li>
-		<li>
-			<h3>DEX</h3>
-			<div>
-				{_monster.stats.dexterity}
-			</div>
-		</li>
-		<li>
-			<h3>CON</h3>
-			<div>
-				{_monster.stats.constitution}
-			</div>
+			{_monster.stats.strength > -1 ? "+" : ""}{_monster.stats.strength}
 		</li>
 		<li>
 			<h3>INT</h3>
-			<div>
-				{_monster.stats.intelligence}
-			</div>
+			{_monster.stats.intelligence > -1 ? "+" : ""}{_monster.stats.intelligence}
+		</li>
+		<li>
+			<h3>DEX</h3>
+			{_monster.stats.dexterity > -1 ? "+" : ""}{_monster.stats.dexterity}
 		</li>
 		<li>
 			<h3>WIS</h3>
-			<div>
-				{_monster.stats.wisdom}
-			</div>
+			{_monster.stats.wisdom > -1 ? "+" : ""}{_monster.stats.wisdom}
+		</li>
+		<li>
+			<h3>CON</h3>
+			{_monster.stats.constitution > -1 ? "+" : ""}{_monster.stats.constitution}
 		</li>
 		<li>
 			<h3>CHA</h3>
-			<div>
-				{_monster.stats.charisma}
-			</div>
+			{_monster.stats.charisma > -1 ? "+" : ""}{_monster.stats.charisma}
 		</li>
 	</ul>
 </article>
@@ -96,7 +91,7 @@
 		display: grid;
 		gap: 0.4rem;
 		width: 100%;
-		max-width: 32rem;
+		max-width: 40rem;
 		grid:
 			"name stats" auto
 			"details stats" 1fr
@@ -116,9 +111,17 @@
 		grid-area: details;
 		display: flex;
 		flex-direction: column;
-		gap: 0.4rem;
+		gap: 0.6rem;
 		padding: 0.4rem;
 		margin: 0;
+	}
+
+	.actions {
+		all: unset;
+		grid-area: stats;
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
 	}
 
 	.stats {
@@ -127,6 +130,7 @@
 		display: grid;
 		gap: 0.4rem;
 		grid-template-columns: 1fr 1fr;
+		height: min-content;
 
 		li {
 			all: unset;
@@ -137,6 +141,9 @@
 			border: var(--border-width) solid var(--background-modifier-border);
 			border-radius: 0.5rem;
 			padding: 0.4rem;
+			justify-content: center;
+			align-items: center;
+			font-size: 0.8rem;
 
 			h3 {
 				grid-area: title;
@@ -145,15 +152,6 @@
 				padding: 0;
 				font-weight: 700;
 				font-size: 0.9rem;
-			}
-
-			div {
-				text-align: center;
-				font-size: 0.8rem;
-
-				span {
-					font-weight: 600;
-				}
 			}
 		}
 	}

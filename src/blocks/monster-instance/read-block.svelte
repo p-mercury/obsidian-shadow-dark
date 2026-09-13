@@ -24,56 +24,68 @@
 		{_monsterInstance.name}
 	</h2>
 	<div class="details">
-		<span><b>Level:</b> {_monsterInstance.level}</span>
-	</div>
-	<ul class="stats">
-		<li>
-			<h3>HP</h3>
+		<span>{_monsterInstance.description}</span>
+		<span>
+			<b>Hit Points:</b>
 			<NumberInput
 				min={0}
 				max={_monsterInstance.maxHitPoints}
 				bind:value={_monsterInstance.hitPoints}
 			/>
-		</li>
+		</span>
+		<span><b>Attacks:</b></span>
+		<ul class="actions">
+			{#each _monsterInstance.actions as action}
+				<li>{action}</li>
+			{/each}
+		</ul>
+		{#if _monsterInstance.attributes.length}
+			<span><b>Attributes:</b></span>
+			<ul class="actions">
+				{#each _monsterInstance.attributes as attribute}
+					<li><b>{attribute.name}.</b> {attribute.description}</li>
+				{/each}
+			</ul>
+		{/if}
+	</div>
+	<ul class="stats">
 		<li>
 			<h3>AC</h3>
-			<div><span>{_monsterInstance.armorClass}</span></div>
+			{_monsterInstance.armorClass}
+		</li>
+		<li>
+			<h3>LV</h3>
+			{_monsterInstance.level}
 		</li>
 		<li>
 			<h3>STR</h3>
-			<div>
-				{_monsterInstance.stats.strength}
-			</div>
-		</li>
-		<li>
-			<h3>DEX</h3>
-			<div>
-				{_monsterInstance.stats.dexterity}
-			</div>
-		</li>
-		<li>
-			<h3>CON</h3>
-			<div>
-				{_monsterInstance.stats.constitution}
-			</div>
+			{_monsterInstance.stats.strength > -1 ? "+" : ""}{_monsterInstance.stats
+				.strength}
 		</li>
 		<li>
 			<h3>INT</h3>
-			<div>
-				{_monsterInstance.stats.intelligence}
-			</div>
+			{_monsterInstance.stats.intelligence > -1 ? "+" : ""}{_monsterInstance
+				.stats.intelligence}
+		</li>
+		<li>
+			<h3>DEX</h3>
+			{_monsterInstance.stats.dexterity > -1 ? "+" : ""}{_monsterInstance.stats
+				.dexterity}
 		</li>
 		<li>
 			<h3>WIS</h3>
-			<div>
-				{_monsterInstance.stats.wisdom}
-			</div>
+			{_monsterInstance.stats.wisdom > -1 ? "+" : ""}{_monsterInstance.stats
+				.wisdom}
+		</li>
+		<li>
+			<h3>CON</h3>
+			{_monsterInstance.stats.constitution > -1 ? "+" : ""}{_monsterInstance
+				.stats.constitution}
 		</li>
 		<li>
 			<h3>CHA</h3>
-			<div>
-				{_monsterInstance.stats.charisma}
-			</div>
+			{_monsterInstance.stats.charisma > -1 ? "+" : ""}{_monsterInstance.stats
+				.charisma}
 		</li>
 	</ul>
 </article>
@@ -110,9 +122,17 @@
 		grid-area: details;
 		display: flex;
 		flex-direction: column;
-		gap: 0.4rem;
+		gap: 0.6rem;
 		padding: 0.4rem;
 		margin: 0;
+	}
+
+	.actions {
+		all: unset;
+		grid-area: stats;
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
 	}
 
 	.stats {
@@ -121,6 +141,7 @@
 		display: grid;
 		gap: 0.4rem;
 		grid-template-columns: 1fr 1fr;
+		height: min-content;
 
 		li {
 			all: unset;
@@ -131,6 +152,8 @@
 			border: var(--border-width) solid var(--background-modifier-border);
 			border-radius: 0.5rem;
 			padding: 0.4rem;
+			justify-content: center;
+			align-items: center;
 
 			h3 {
 				grid-area: title;
@@ -139,15 +162,6 @@
 				padding: 0;
 				font-weight: 700;
 				font-size: 0.9rem;
-			}
-
-			div {
-				text-align: center;
-				font-size: 0.8rem;
-
-				span {
-					font-weight: 600;
-				}
 			}
 		}
 	}

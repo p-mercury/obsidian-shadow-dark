@@ -2,11 +2,25 @@
 	import type { ItemList } from "../../types/item-list";
 	import type { Item } from "../../types/item.svelte";
 	import ItemDialog from "../../components/item-dialog.svelte";
+	import NumberInput from "../../components/number-input.svelte";
 
-	let { items, itemList }: { items: Record<string, Item>; itemList: ItemList } =
-		$props();
+	let {
+		items,
+		itemList,
+		onSave,
+	}: {
+		items: Record<string, Item>;
+		itemList: ItemList;
+		onSave: (npc: ItemList) => void;
+	} = $props();
 
 	let itemDialog = $state<ReturnType<typeof ItemDialog>>();
+
+	let _itemList = $state(itemList);
+	$effect(() => {
+		const snapshot = $state.snapshot(_itemList);
+		onSave(snapshot);
+	});
 </script>
 
 <ItemDialog bind:this={itemDialog} />
@@ -18,12 +32,12 @@
 			<span><b>Name</b></span>
 			<span><b>Cost</b></span>
 		</li>
-		{#each itemList.items as listItem}
+		{#each _itemList.items as listItem}
 			{@const item = items[listItem.id]}
 			{#if item}
 				<li>
 					<button onclick={() => itemDialog?.showModal(item)}>
-						<span>{listItem.quantity}</span>
+						<NumberInput min={0} bind:value={listItem.quantity} />
 						<span>{item.name}</span>
 						<span>
 							{#if item.cost.gold}

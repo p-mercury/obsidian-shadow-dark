@@ -19,7 +19,8 @@ export interface MonsterData {
 	movement: Range;
 	hitPoints: number | DiceRoll;
 	armorClass: number;
-	attacks: string[];
+	actions: string[];
+	attributes: { name: string; description: string }[];
 	stats: {
 		strength: number;
 		dexterity: number;
@@ -44,7 +45,8 @@ export class Monster {
 	movement: Range;
 	_hitPoints: number | DiceRoll;
 	private _armorClass: number;
-	attacks: string[];
+	actions: string[];
+	attributes: { name: string; description: string }[];
 	stats: MonsterData["stats"];
 
 	constructor(data: MonsterData) {
@@ -61,7 +63,8 @@ export class Monster {
 				: data.hitPoints,
 		);
 		this._armorClass = $state(Math.round(data.armorClass));
-		this.attacks = $state(data.attacks);
+		this.actions = $state(data.actions);
+		this.attributes = $state(data.attributes);
 		this.stats = $state({ ...data.stats });
 	}
 
@@ -92,7 +95,8 @@ export class Monster {
 			movement: $state.snapshot(this.movement),
 			hitPoints: $state.snapshot(this._hitPoints),
 			armorClass: $state.snapshot(this._armorClass),
-			attacks: $state.snapshot(this.attacks),
+			actions: $state.snapshot(this.actions),
+			attributes: $state.snapshot(this.attributes),
 			stats: {
 				strength: $state.snapshot(this.stats.strength),
 				dexterity: $state.snapshot(this.stats.dexterity),
@@ -122,7 +126,8 @@ export class Monster {
 			maxHitPoints: hitPoints,
 			hitPoints,
 			armorClass: snapshot.armorClass,
-			attacks: snapshot.attacks,
+			actions: snapshot.actions,
+			attributes: snapshot.attributes,
 			stats: {
 				strength: $state.snapshot(this.stats.strength),
 				dexterity: $state.snapshot(this.stats.dexterity),
@@ -200,9 +205,22 @@ export class Monster {
 				armorClass = data.armorClass;
 			}
 
-			let attacks: string[] = [];
-			if ("attacks" in data && Array.isArray(data.attacks)) {
-				attacks = data.attacks;
+			let actions: string[] = [];
+			if ("actions" in data && Array.isArray(data.actions)) {
+				data.actions.forEach((a: any) => {
+					if (typeof a !== "string") return;
+					actions.push(a);
+				});
+			}
+
+			let attributes: MonsterData["attributes"] = [];
+			if ("attributes" in data && Array.isArray(data.attributes)) {
+				data.attributes.forEach((a: any) => {
+					if (typeof a !== "object") return;
+					if (typeof a.name !== "string") return;
+					if (typeof a.description !== "string") return;
+					attributes.push({ name: a.name, description: a.description });
+				});
 			}
 
 			let stats = {
@@ -243,7 +261,8 @@ export class Monster {
 				movement,
 				hitPoints,
 				armorClass,
-				attacks,
+				actions,
+				attributes,
 				stats,
 			});
 		} catch {

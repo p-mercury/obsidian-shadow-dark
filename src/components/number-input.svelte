@@ -107,7 +107,7 @@
 
 <style>
 	.qty-row {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 	}
 

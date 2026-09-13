@@ -53,29 +53,26 @@ class ItemListBlockChild extends MarkdownRenderChild {
 					itemList,
 					editable: isEditable,
 					onSave: async (updated: ItemList) => {
-						const section = this.ctx.getSectionInfo(this.containerEl);
-
-						if (!section) {
-							return;
-						}
-
 						const file = this.scope.app.vault.getAbstractFileByPath(
 							this.ctx.sourcePath,
 						);
-
-						if (!(file instanceof TFile)) {
-							return;
-						}
+						if (!(file instanceof TFile)) return;
 
 						await this.scope.app.vault.process(file, (content) => {
+							const section = this.ctx.getSectionInfo(this.containerEl);
+							if (!section) return content;
+
+							const { lineStart, lineEnd } = section;
+							const newline = content.includes("\r\n") ? "\r\n" : "\n";
 							const lines = content.split(/\r?\n/);
-							const replacement = marshalItemList(updated).split("\n");
+
 							lines.splice(
-								section.lineStart,
-								section.lineEnd - section.lineStart + 1,
-								...replacement,
+								lineStart,
+								lineEnd - lineStart + 1,
+								...marshalItemList(updated).split(/\r?\n/),
 							);
-							return lines.join("\n");
+
+							return lines.join(newline);
 						});
 					},
 				},

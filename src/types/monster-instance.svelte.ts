@@ -12,7 +12,8 @@ export interface MonsterInstanceData {
 	maxHitPoints: number;
 	hitPoints: number;
 	armorClass: number;
-	attacks: string[];
+	actions: string[];
+	attributes: { name: string; description: string }[];
 	stats: {
 		strength: number;
 		dexterity: number;
@@ -37,7 +38,8 @@ export class MonsterInstance {
 	private _maxHitPoints: number;
 	private _hitPoints: number;
 	private _armorClass: number;
-	attacks: string[];
+	actions: string[];
+	attributes: { name: string; description: string }[];
 	stats: MonsterInstanceData["stats"];
 
 	constructor(data: MonsterInstanceData) {
@@ -50,7 +52,8 @@ export class MonsterInstance {
 		this._maxHitPoints = $state(Math.round(data.maxHitPoints));
 		this._hitPoints = $state(Math.round(data.hitPoints));
 		this._armorClass = $state(Math.round(data.armorClass));
-		this.attacks = $state(data.attacks);
+		this.actions = $state(data.actions);
+		this.attributes = $state(data.attributes);
 		this.stats = $state({ ...data.stats });
 	}
 
@@ -89,7 +92,8 @@ export class MonsterInstance {
 			maxHitPoints: $state.snapshot(this._maxHitPoints),
 			hitPoints: $state.snapshot(this._hitPoints),
 			armorClass: $state.snapshot(this._armorClass),
-			attacks: $state.snapshot(this.attacks),
+			actions: $state.snapshot(this.actions),
+			attributes: $state.snapshot(this.attributes),
 			stats: {
 				strength: $state.snapshot(this.stats.strength),
 				dexterity: $state.snapshot(this.stats.dexterity),

@@ -26,7 +26,8 @@
 
 	let _encounterTable = $state(encounterTable);
 	$effect(() => {
-		onSave(_encounterTable);
+		const snapshot = $state.snapshot(_encounterTable);
+		onSave(snapshot);
 	});
 </script>
 
@@ -38,8 +39,14 @@
 			{encounterTable.title}
 		</h2>
 		<button
-			onclick={() =>
-				(roll = Math.floor(Math.random() * encounterTable.die) + 1)}
+			onclick={() => {
+				if (encounterTable.die < 2) return;
+				let newRoll = $state.snapshot(roll);
+				while (newRoll === roll) {
+					newRoll = Math.floor(Math.random() * encounterTable.die) + 1;
+				}
+				roll = newRoll;
+			}}
 		>
 			d{encounterTable.die}
 			<div bind:this={randomButton}></div>
@@ -57,7 +64,7 @@
 					roll <= encounter.range.max}
 			>
 				<button onclick={() => encounterDialog?.showModal(encounter)}>
-					<span>{marshalRollRange(encounter.range)}</span>
+					<span class="range">{marshalRollRange(encounter.range)}</span>
 					<span>{encounter.title}</span>
 				</button>
 			</li>
@@ -158,6 +165,13 @@
 
 			&.active {
 				box-shadow: inset 0 0 0 2px var(--interactive-accent);
+			}
+
+			.range {
+				display: inline-flex;
+				justify-content: center;
+				align-items: center;
+				font-weight: 500;
 			}
 
 			span {

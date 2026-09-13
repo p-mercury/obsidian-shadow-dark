@@ -270,7 +270,10 @@ export default class Shadowdark extends Plugin {
 									movement: Range.NEAR,
 									hitPoints: { count: 1, sides: 4, modifier: 1 },
 									armorClass: 10,
-									attacks: ["Some sample attack"],
+									actions: ["Some sample attack"],
+									attributes: [
+										{ name: "Some attribute", description: "Some description" },
+									],
 									stats: {
 										strength: 0,
 										dexterity: 0,
