@@ -1,4 +1,5 @@
 import type { ModifiedDiceRoll } from "./modified-dice-roll";
+import JSON5 from "json5";
 
 export interface ClassData {
 	id: string;
@@ -32,7 +33,7 @@ export class Class {
 	marshal() {
 		return [
 			"```shadowdark-class",
-			JSON.stringify(this.snapshot, null, 2),
+			JSON5.stringify(this.snapshot, null, 2),
 			"```",
 			`^shadowdark-class-${this.id}`,
 		].join("\n");
@@ -42,7 +43,7 @@ export class Class {
 		const blockMatch = content.match(/```shadowdark-item\s*([\s\S]*?)```/);
 		const json = blockMatch?.[1]?.trim() ?? content.trim();
 		try {
-			return new Class(JSON.parse(json) as ClassData);
+			return new Class(JSON5.parse(json) as ClassData);
 		} catch {
 			throw new Error("Invalid Item JSON.");
 		}

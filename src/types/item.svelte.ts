@@ -1,6 +1,7 @@
 import { Abundance } from "./abundance";
 import type { Coin } from "./coin";
 import type { SlotUsage } from "./slot-usage";
+import JSON5 from "json5";
 
 export interface ItemData {
 	id: string;
@@ -54,7 +55,7 @@ export class Item {
 	marshal() {
 		return [
 			"```shadowdark-item",
-			JSON.stringify(this.snapshot, null, 2),
+			JSON5.stringify(this.snapshot, null, 2),
 			"```",
 		].join("\n");
 	}
@@ -63,7 +64,7 @@ export class Item {
 		const blockMatch = content.match(/```shadowdark-item\s*([\s\S]*?)```/);
 		const json = blockMatch?.[1]?.trim() ?? content.trim();
 		try {
-			return new Item(JSON.parse(json) as ItemData);
+			return new Item(JSON5.parse(json) as ItemData);
 		} catch {
 			throw new Error("Invalid Item JSON.");
 		}

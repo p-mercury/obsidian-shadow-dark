@@ -3,6 +3,7 @@ import {
 	unmarshalModifiedDiceRoll,
 	type ModifiedDiceRoll,
 } from "./modified-dice-roll";
+import JSON5 from "json5";
 
 export type Encounter = {
 	title: string;
@@ -24,7 +25,7 @@ export function marshalEncounter(encounter: Encounter): string {
 
 	return [
 		"```shadowdark-encounter",
-		JSON.stringify(serialized, null, 2),
+		JSON5.stringify(serialized, null, 2),
 		"```",
 	].join("\n");
 }
@@ -33,7 +34,7 @@ export function unmarshalEncounter(content: string) {
 	let data: any;
 	try {
 		const blockMatch = content.match(/```shadowdark-encounter\s*([\s\S]*?)```/);
-		data = JSON.parse(blockMatch?.[1]?.trim() ?? content.trim());
+		data = JSON5.parse(blockMatch?.[1]?.trim() ?? content.trim());
 	} catch {
 		throw new Error("Invalid JSON");
 	}

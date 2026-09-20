@@ -10,6 +10,7 @@ import {
 	unmarshalRollRange,
 	type RollRange,
 } from "./roll-range";
+import JSON5 from "json5";
 
 export type EncounterTable = {
 	title: string;
@@ -35,7 +36,7 @@ export function marshalEncounterTable(encounterTable: EncounterTable): string {
 
 	return [
 		"```shadowdark-encounter-table",
-		JSON.stringify(serialized, null, 2),
+		JSON5.stringify(serialized, null, 2),
 		"```",
 	].join("\n");
 }
@@ -45,7 +46,7 @@ export function unmarshalEncounterTable(content: string) {
 		/```shadowdark-encounter-table\s*([\s\S]*?)```/,
 	);
 	try {
-		const data = JSON.parse(blockMatch?.[1]?.trim() ?? content.trim());
+		const data = JSON5.parse(blockMatch?.[1]?.trim() ?? content.trim());
 
 		let title = "";
 		if (typeof data?.title === "string") {

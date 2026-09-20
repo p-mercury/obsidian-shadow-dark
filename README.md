@@ -12,7 +12,7 @@ To start using encounter tables, you first need to create a monster. Right-click
 
 Now that you have a monster, you can create your first encounter table. Right-click in the file where you want to add the table, then click **Insert Encounter Table** in the **Shadowdark** section. This will create an encounter table template for you to fill out.
 
-You will need to give the encounter table a title and decide which die will be rolled to select the encounter. For example, put **6** in the **die** section if you want a **d6** to determine the encounter.
+You will need to give the encounter table a title and decide which die will be rolled to select the encounter. For example, put _"1d6"_ in the **roll** section if you want **1d6** to determine the encounter.
 
 In the **encounters** section, you can add any encounters you want. Each encounter needs a range, which determines which rolls will trigger it, and a title, which will be displayed in the table. You can optionally add a longer description, which will be shown when you click the encounter to view more information.
 
@@ -21,7 +21,7 @@ The second optional property is the **monsters** list. In this section, you can 
 ```json
 {
 	"title": "Cave Encounters",
-	"die": 6,
+	"roll": "1d6",
 	"encounters": [
 		{
 			"range": "1",

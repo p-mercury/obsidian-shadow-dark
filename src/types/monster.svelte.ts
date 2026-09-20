@@ -8,6 +8,7 @@ import {
 } from "./modified-dice-roll";
 import { MonsterInstance } from "./monster-instance.svelte";
 import { Range } from "./range";
+import JSON5 from "json5";
 
 export interface MonsterData {
 	id: string;
@@ -128,7 +129,7 @@ export class Monster {
 		const snapshot = this.snapshot;
 		return [
 			"```shadowdark-monster",
-			JSON.stringify(
+			JSON5.stringify(
 				{
 					...snapshot,
 					hitPoints: marshalModifiedDiceRoll(snapshot.hitPoints),
@@ -143,7 +144,7 @@ export class Monster {
 	static unmarshal(content: string): Monster {
 		const blockMatch = content.match(/```shadowdark-monster\s*([\s\S]*?)```/);
 		try {
-			const data = JSON.parse(blockMatch?.[1]?.trim() ?? content.trim());
+			const data = JSON5.parse(blockMatch?.[1]?.trim() ?? content.trim());
 
 			let id = "";
 			if (typeof data?.id === "string") {

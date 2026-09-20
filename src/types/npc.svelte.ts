@@ -13,6 +13,7 @@ import type { Class } from "./class.svelte";
 import { Level } from "./level";
 import { getStatModifier } from "./stat";
 import { Wealth } from "./wealth";
+import JSON5 from "json5";
 
 export interface NpcData {
 	name: string;
@@ -150,7 +151,7 @@ export class Npc {
 
 		return [
 			"```shadowdark-npc",
-			JSON.stringify(
+			JSON5.stringify(
 				{
 					...snapshot,
 					class: snapshot.class?.id,
@@ -167,7 +168,7 @@ export class Npc {
 		const blockMatch = content.match(/```shadowdark-npc\s*([\s\S]*?)```/);
 		const json = blockMatch?.[1]?.trim() ?? content.trim();
 		try {
-			const value = JSON.parse(json);
+			const value = JSON5.parse(json);
 			return new Npc({ ...value, class: classes[value.class] });
 		} catch {
 			throw new Error("Invalid NPC JSON.");

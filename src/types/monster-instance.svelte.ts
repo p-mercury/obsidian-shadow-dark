@@ -1,6 +1,7 @@
 import { Alignment } from "./alignment";
 import { Level } from "./level";
 import type { Range } from "./range";
+import JSON5 from "json5";
 
 export interface MonsterInstanceData {
 	id: string;
@@ -108,7 +109,7 @@ export class MonsterInstance {
 	marshal() {
 		return [
 			"```shadowdark-monster-instance",
-			JSON.stringify(this.snapshot, null, 2),
+			JSON5.stringify(this.snapshot, null, 2),
 			"```",
 		].join("\n");
 	}
@@ -119,7 +120,7 @@ export class MonsterInstance {
 		);
 		const json = blockMatch?.[1]?.trim() ?? content.trim();
 		try {
-			const value = JSON.parse(json);
+			const value = JSON5.parse(json);
 			return new MonsterInstance(value);
 		} catch {
 			throw new Error("Invalid NPC JSON.");
