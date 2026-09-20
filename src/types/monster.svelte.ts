@@ -129,7 +129,7 @@ export class Monster {
 		const snapshot = this.snapshot;
 		return [
 			"```shadowdark-monster",
-			JSON5.stringify(
+			JSON.stringify(
 				{
 					...snapshot,
 					hitPoints: marshalModifiedDiceRoll(snapshot.hitPoints),

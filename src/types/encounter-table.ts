@@ -36,7 +36,7 @@ export function marshalEncounterTable(encounterTable: EncounterTable): string {
 
 	return [
 		"```shadowdark-encounter-table",
-		JSON5.stringify(serialized, null, 2),
+		JSON.stringify(serialized, null, 2),
 		"```",
 	].join("\n");
 }

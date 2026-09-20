@@ -109,7 +109,7 @@ export class MonsterInstance {
 	marshal() {
 		return [
 			"```shadowdark-monster-instance",
-			JSON5.stringify(this.snapshot, null, 2),
+			JSON.stringify(this.snapshot, null, 2),
 			"```",
 		].join("\n");
 	}

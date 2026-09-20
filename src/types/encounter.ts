@@ -25,7 +25,7 @@ export function marshalEncounter(encounter: Encounter): string {
 
 	return [
 		"```shadowdark-encounter",
-		JSON5.stringify(serialized, null, 2),
+		JSON.stringify(serialized, null, 2),
 		"```",
 	].join("\n");
 }

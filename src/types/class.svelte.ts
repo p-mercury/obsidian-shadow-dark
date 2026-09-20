@@ -33,7 +33,7 @@ export class Class {
 	marshal() {
 		return [
 			"```shadowdark-class",
-			JSON5.stringify(this.snapshot, null, 2),
+			JSON.stringify(this.snapshot, null, 2),
 			"```",
 			`^shadowdark-class-${this.id}`,
 		].join("\n");

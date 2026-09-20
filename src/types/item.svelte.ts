@@ -55,7 +55,7 @@ export class Item {
 	marshal() {
 		return [
 			"```shadowdark-item",
-			JSON5.stringify(this.snapshot, null, 2),
+			JSON.stringify(this.snapshot, null, 2),
 			"```",
 		].join("\n");
 	}

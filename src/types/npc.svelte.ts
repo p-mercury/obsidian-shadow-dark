@@ -151,7 +151,7 @@ export class Npc {
 
 		return [
 			"```shadowdark-npc",
-			JSON5.stringify(
+			JSON.stringify(
 				{
 					...snapshot,
 					class: snapshot.class?.id,
