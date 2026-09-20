@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { untrack } from "svelte";
+	import { setContext, untrack } from "svelte";
 	import { Class } from "../../types/class.svelte";
 	import { marshalDiceRoll } from "../../types/dice-roll";
 
@@ -11,6 +11,7 @@
 		onSave?: (npc: Class) => void;
 	} = $props();
 
+	// svelte-ignore state_referenced_locally
 	let _clas = new Class(clas);
 	$effect(() => {
 		_clas.hitPoints;
@@ -66,42 +67,5 @@
 		gap: 0.4rem;
 		padding: 0.4rem;
 		margin: 0;
-	}
-
-	.stats {
-		all: unset;
-		grid-area: stats;
-		display: grid;
-		gap: 0.4rem;
-		grid-template-columns: 1fr 1fr;
-
-		li {
-			all: unset;
-			display: flex;
-			gap: 0.2rem;
-			flex-direction: column;
-			background-color: var(--background-primary);
-			border: var(--border-width) solid var(--background-modifier-border);
-			border-radius: 0.5rem;
-			padding: 0.4rem;
-
-			h3 {
-				grid-area: title;
-				text-align: center;
-				margin: 0;
-				padding: 0;
-				font-weight: 700;
-				font-size: 0.9rem;
-			}
-
-			div {
-				text-align: center;
-				font-size: 0.8rem;
-
-				span {
-					font-weight: 600;
-				}
-			}
-		}
 	}
 </style>

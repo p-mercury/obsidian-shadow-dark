@@ -1,11 +1,11 @@
 import { Alignment } from "./alignment";
-import {
-	executeDiceRoll,
-	marshalDiceRoll,
-	unmarshalDiceRoll,
-	type DiceRoll,
-} from "./dice-roll";
 import { Level } from "./level";
+import {
+	executeRoll,
+	marshalModifiedDiceRoll,
+	unmarshalModifiedDiceRoll,
+	type ModifiedDiceRoll,
+} from "./modified-dice-roll";
 import { MonsterInstance } from "./monster-instance.svelte";
 import { Range } from "./range";
 
@@ -17,7 +17,7 @@ export interface MonsterData {
 	level: Level;
 	alignment: Alignment;
 	movement: Range;
-	hitPoints: number | DiceRoll;
+	hitPoints: ModifiedDiceRoll;
 	armorClass: number;
 	actions: string[];
 	attributes: { name: string; description: string }[];
@@ -43,7 +43,7 @@ export class Monster {
 	level: Level;
 	alignment: Alignment;
 	movement: Range;
-	_hitPoints: number | DiceRoll;
+	hitPoints: ModifiedDiceRoll;
 	private _armorClass: number;
 	actions: string[];
 	attributes: { name: string; description: string }[];
@@ -57,23 +57,11 @@ export class Monster {
 		this.level = $state(data.level);
 		this.alignment = $state(data.alignment);
 		this.movement = $state(data.movement);
-		this._hitPoints = $state(
-			typeof data.hitPoints === "number"
-				? Math.round(data.hitPoints)
-				: data.hitPoints,
-		);
+		this.hitPoints = $state(data.hitPoints);
 		this._armorClass = $state(Math.round(data.armorClass));
 		this.actions = $state(data.actions);
 		this.attributes = $state(data.attributes);
 		this.stats = $state({ ...data.stats });
-	}
-
-	get hitPoints() {
-		return this._hitPoints;
-	}
-
-	set hitPoints(v: number | DiceRoll) {
-		this._hitPoints = typeof v === "number" ? Math.round(v) : v;
 	}
 
 	get armorClass() {
@@ -93,7 +81,7 @@ export class Monster {
 			level: $state.snapshot(this.level),
 			alignment: $state.snapshot(this.alignment),
 			movement: $state.snapshot(this.movement),
-			hitPoints: $state.snapshot(this._hitPoints),
+			hitPoints: $state.snapshot(this.hitPoints),
 			armorClass: $state.snapshot(this._armorClass),
 			actions: $state.snapshot(this.actions),
 			attributes: $state.snapshot(this.attributes),
@@ -111,10 +99,7 @@ export class Monster {
 	get instance(): MonsterInstance {
 		const snapshot = this.snapshot;
 
-		const hitPoints =
-			typeof snapshot.hitPoints === "number"
-				? snapshot.hitPoints
-				: executeDiceRoll(snapshot.hitPoints);
+		const hitPoints = executeRoll(snapshot.hitPoints);
 
 		return new MonsterInstance({
 			id: snapshot.id,
@@ -146,10 +131,7 @@ export class Monster {
 			JSON.stringify(
 				{
 					...snapshot,
-					hitPoints:
-						typeof snapshot.hitPoints === "number"
-							? snapshot.hitPoints
-							: marshalDiceRoll(snapshot.hitPoints),
+					hitPoints: marshalModifiedDiceRoll(snapshot.hitPoints),
 				},
 				null,
 				2,
@@ -193,12 +175,9 @@ export class Monster {
 				movement = data.movement;
 			}
 
-			let hitPoints: number | DiceRoll = 1;
-			if (typeof data?.hitPoints === "number") {
-				hitPoints = data.hitPoints;
-			} else if (typeof data?.hitPoints === "string") {
-				hitPoints = unmarshalDiceRoll(data?.hitPoints);
-			}
+			let hitPoints: ModifiedDiceRoll = unmarshalModifiedDiceRoll(
+				data?.hitPoints,
+			);
 
 			let armorClass: number = 0;
 			if (typeof data?.armorClass === "number") {

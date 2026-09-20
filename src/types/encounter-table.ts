@@ -1,4 +1,10 @@
 import { marshalDiceRoll, unmarshalDiceRoll, type DiceRoll } from "./dice-roll";
+import type { Encounter } from "./encounter";
+import {
+	getMaxRoll,
+	marshalModifiedDiceRoll,
+	unmarshalModifiedDiceRoll,
+} from "./modified-dice-roll";
 import {
 	marshalRollRange,
 	unmarshalRollRange,
@@ -7,30 +13,22 @@ import {
 
 export type EncounterTable = {
 	title: string;
-	die: number;
-	encounters: {
+	roll: DiceRoll;
+	encounters: (Encounter & {
 		range: RollRange;
-		title: string;
-		description?: string;
-		monsters?: {
-			id: string;
-			quantity: number | DiceRoll;
-		}[];
-	}[];
+	})[];
 };
 
 export function marshalEncounterTable(encounterTable: EncounterTable): string {
 	const serialized = {
 		...encounterTable,
+		roll: marshalDiceRoll(encounterTable.roll),
 		encounters: encounterTable.encounters.map((encounter) => ({
 			...encounter,
 			range: marshalRollRange(encounter.range),
 			monsters: encounter.monsters?.map((m) => ({
 				...m,
-				quantity:
-					typeof m.quantity === "number"
-						? m.quantity
-						: marshalDiceRoll(m.quantity),
+				quantity: marshalModifiedDiceRoll(m.quantity),
 			})),
 		})),
 	};
@@ -54,10 +52,7 @@ export function unmarshalEncounterTable(content: string) {
 			title = data.title.trim();
 		}
 
-		let die = 6;
-		if (typeof data?.die === "number") {
-			die = Math.max(Math.round(data.die), 2);
-		}
+		let roll = unmarshalDiceRoll(data?.roll);
 
 		let encounters: EncounterTable["encounters"] = [];
 		if ("encounters" in data && Array.isArray(data.encounters)) {
@@ -69,15 +64,13 @@ export function unmarshalEncounterTable(content: string) {
 
 				parsedEncounters.push({
 					range: unmarshalRollRange(e.range),
+
 					title: e.title,
 					description: e.description,
 					monsters: Array.isArray(e.monsters)
 						? e.monsters?.map((m: any) => ({
 								id: m.id,
-								quantity:
-									typeof (m.quantity || 1) === "number"
-										? m.quantity || 1
-										: unmarshalDiceRoll(m.quantity),
+								quantity: unmarshalModifiedDiceRoll(m.quantity),
 							}))
 						: undefined,
 				});
@@ -92,7 +85,7 @@ export function unmarshalEncounterTable(content: string) {
 						? Math.max(encounter.range.min, previous.range.max + 1)
 						: Math.max(encounter.range.min, 1);
 
-					const max = Math.min(encounter.range.max, die);
+					const max = Math.min(encounter.range.max, getMaxRoll(roll));
 
 					if (min <= max) {
 						result.push({
@@ -125,11 +118,11 @@ export function unmarshalEncounterTable(content: string) {
 				nextUnoccupiedRoll = encounter.range.max + 1;
 			}
 
-			if (nextUnoccupiedRoll <= die) {
+			if (nextUnoccupiedRoll <= getMaxRoll(roll)) {
 				encounters.push({
 					range: {
 						min: nextUnoccupiedRoll,
-						max: die,
+						max: getMaxRoll(roll),
 					},
 					title: "Nothing happens",
 				});
@@ -138,7 +131,7 @@ export function unmarshalEncounterTable(content: string) {
 
 		return {
 			title,
-			die,
+			roll,
 			encounters,
 		} as EncounterTable;
 	} catch {

@@ -16,6 +16,7 @@
 
 	let itemDialog = $state<ReturnType<typeof ItemDialog>>();
 
+	// svelte-ignore state_referenced_locally
 	let _itemList = $state(itemList);
 	$effect(() => {
 		const snapshot = $state.snapshot(_itemList);

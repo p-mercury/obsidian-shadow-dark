@@ -167,7 +167,7 @@ export default class Shadowdark extends Plugin {
 								editor.replaceSelection(
 									marshalEncounterTable({
 										title: "New encounter table",
-										die: 6,
+										roll: { count: 1, sides: 6 },
 										encounters: [
 											{
 												range: { min: 1, max: 3 },

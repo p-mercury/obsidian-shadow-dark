@@ -13,6 +13,7 @@
 		onSave: (npc: MonsterInstance) => void;
 	} = $props();
 
+	// svelte-ignore state_referenced_locally
 	let _monsterInstance = new MonsterInstance(monsterInstance);
 	$effect(() => {
 		onSave(_monsterInstance);

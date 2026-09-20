@@ -42,20 +42,55 @@ class EncoutnerTableBlockChild extends MarkdownRenderChild {
 					const file = this.scope.app.vault.getAbstractFileByPath(
 						this.ctx.sourcePath,
 					);
+
 					if (!(file instanceof TFile)) return;
 
-					await this.scope.app.vault.process(file, (content) => {
-						const section = this.ctx.getSectionInfo(this.containerEl);
-						if (!section) return content;
+					const section = this.ctx.getSectionInfo(this.containerEl);
+					if (!section) return;
 
-						const { lineStart, lineEnd } = section;
+					const replacement = marshalEncounterTable(updated);
+
+					await this.scope.app.vault.process(file, (content) => {
 						const newline = content.includes("\r\n") ? "\r\n" : "\n";
 						const lines = content.split(/\r?\n/);
 
+						let blockStart = -1;
+
+						for (
+							let index = Math.max(0, section.lineStart);
+							index <= Math.min(section.lineEnd, lines.length - 1);
+							index++
+						) {
+							const line = lines[index];
+
+							if (
+								line !== undefined &&
+								/^\s*```shadowdark-encounter-table\s*$/.test(line)
+							) {
+								blockStart = index;
+								break;
+							}
+						}
+
+						if (blockStart === -1) return content;
+
+						let blockEnd = -1;
+
+						for (let index = blockStart + 1; index < lines.length; index++) {
+							const line = lines[index];
+
+							if (line !== undefined && /^\s*```\s*$/.test(line)) {
+								blockEnd = index;
+								break;
+							}
+						}
+
+						if (blockEnd === -1) return content;
+
 						lines.splice(
-							lineStart,
-							lineEnd - lineStart + 1,
-							...marshalEncounterTable(updated).split(/\r?\n/),
+							blockStart,
+							blockEnd - blockStart + 1,
+							...replacement.split(/\r?\n/),
 						);
 
 						return lines.join(newline);

@@ -1,7 +1,10 @@
 <script lang="ts">
 	import type Shadowdark from "../main";
-	import { executeDiceRoll, marshalDiceRoll } from "../types/dice-roll";
 	import type { EncounterTable } from "../types/encounter-table";
+	import {
+		executeRoll,
+		marshalModifiedDiceRoll,
+	} from "../types/modified-dice-roll";
 	import Dialog from "./dialog.svelte";
 
 	let { scope }: { scope: Shadowdark } = $props();
@@ -35,10 +38,7 @@
 							encounter!.monsters?.forEach((m) => {
 								const monster = scope.monsters[m.id];
 								if (monster) {
-									const x =
-										typeof m.quantity === "number"
-											? m.quantity
-											: executeDiceRoll(m.quantity);
+									const x = executeRoll(m.quantity);
 									for (let i = 0; i < x; i++) {
 										const snapshot = monster.instance;
 										snapshot.name += ` ${i + 1}`;
@@ -82,9 +82,7 @@
 						{#if monster}
 							<li>
 								<span>
-									- {typeof m.quantity === "number"
-										? `${m.quantity}x`
-										: marshalDiceRoll(m.quantity)}
+									- {marshalModifiedDiceRoll(m.quantity)}
 									{monster.name}
 								</span>
 							</li>

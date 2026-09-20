@@ -4,6 +4,12 @@
 	import { marshalRollRange } from "../../types/roll-range";
 	import EncounterDialog from "../../components/encounter-dialog.svelte";
 	import type Shadowdark from "../../main";
+	import {
+		executeRoll,
+		getMaxRoll,
+		getMinRoll,
+	} from "../../types/modified-dice-roll";
+	import { marshalDiceRoll } from "../../types/dice-roll";
 
 	let {
 		scope,
@@ -24,6 +30,7 @@
 		if (randomButton) setIcon(randomButton, "dices");
 	});
 
+	// svelte-ignore state_referenced_locally
 	let _encounterTable = $state(encounterTable);
 	$effect(() => {
 		const snapshot = $state.snapshot(_encounterTable);
@@ -40,21 +47,26 @@
 		</h2>
 		<button
 			onclick={() => {
-				if (encounterTable.die < 2) return;
+				if (
+					getMaxRoll(encounterTable.roll) <= getMinRoll(encounterTable.roll)
+				) {
+					return;
+				}
+
 				let newRoll = $state.snapshot(roll);
 				while (newRoll === roll) {
-					newRoll = Math.floor(Math.random() * encounterTable.die) + 1;
+					newRoll = executeRoll(encounterTable.roll);
 				}
 				roll = newRoll;
 			}}
 		>
-			d{encounterTable.die}
+			{marshalDiceRoll(encounterTable.roll)}
 			<div bind:this={randomButton}></div>
 		</button>
 	</header>
 	<ul>
 		<li class="header">
-			<span><b>d{encounterTable.die}</b></span>
+			<span><b>{marshalDiceRoll(encounterTable.roll)}</b></span>
 			<span><b>Details</b></span>
 		</li>
 		{#each encounterTable.encounters as encounter}

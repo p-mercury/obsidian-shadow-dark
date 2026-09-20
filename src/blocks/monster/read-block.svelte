@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Monster } from "../../types/monster.svelte";
 	import type Shadowdark from "../../main";
-	import { marshalDiceRoll } from "../../types/dice-roll";
+	import { marshalModifiedDiceRoll } from "../../types/modified-dice-roll";
 
 	let {
 		scope,
@@ -13,6 +13,7 @@
 		onSave: (npc: Monster) => void;
 	} = $props();
 
+	// svelte-ignore state_referenced_locally
 	let _monster = new Monster(monster);
 	$effect(() => {
 		onSave(_monster);
@@ -46,7 +47,7 @@
 			<h3>HP</h3>
 			{typeof _monster.hitPoints === "number"
 				? _monster.hitPoints
-				: marshalDiceRoll(_monster.hitPoints)}
+				: marshalModifiedDiceRoll(_monster.hitPoints)}
 		</li>
 		<li>
 			<h3>AC</h3>

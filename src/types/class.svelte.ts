@@ -1,17 +1,17 @@
-import { type DiceRoll } from "./dice-roll";
+import type { ModifiedDiceRoll } from "./modified-dice-roll";
 
 export interface ClassData {
 	id: string;
 	name: string;
 	description: string;
-	hitPoints: DiceRoll;
+	hitPoints: ModifiedDiceRoll;
 }
 
 export class Class {
 	id: string;
 	name: string;
 	description: string;
-	hitPoints: DiceRoll;
+	hitPoints: ModifiedDiceRoll;
 
 	constructor(data: ClassData) {
 		this.id = $state(data.id);

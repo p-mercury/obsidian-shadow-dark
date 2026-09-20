@@ -15,6 +15,7 @@
 		onSave: (npc: Npc) => void;
 	} = $props();
 
+	// svelte-ignore state_referenced_locally
 	let _npc = new Npc(npc);
 	$effect(() => {
 		_npc.hitPoints;
